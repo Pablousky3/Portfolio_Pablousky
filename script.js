@@ -1,3 +1,10 @@
+/* ==========================================================================
+   1. INICIALIZACIÓN Y UTILIDADES
+   ==========================================================================
+   Aquí preparo la página, detecto qué plantilla se está mostrando y conecto
+   las interacciones comunes. Mantengo esta parte pequeña para que el resto
+   del archivo se limite a datos, renderizado y comportamiento visual.
+   ========================================================================== */
 // Inicializa las dos páginas y registra sus interacciones cuando el DOM está listo.
 document.addEventListener("DOMContentLoaded", () => {
   const isProjectPage = document.body.dataset.page === "project";
@@ -14,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupDocumentFilters();
     setupScrollAnimations();
     setup3DCards();
+    setupFloatingPhysics();
   }
   setupNavigation();
   $("#modal-close")?.addEventListener("click", closeModal);
@@ -52,6 +60,12 @@ const onAll = (selector, event, callback, root = document) =>
     .querySelectorAll(selector)
     .forEach((element) => element.addEventListener(event, callback));
 
+/* ==========================================================================
+   2. DATOS DEL PORTFOLIO
+   ==========================================================================
+   Guardo el contenido en estructuras reutilizables para que pueda ampliar el
+   portfolio sin duplicar HTML ni cambiar la lógica de cada componente.
+   ========================================================================== */
 // Catálogo de habilidades, herramientas y descripciones de cada área profesional.
 const skills = [
   {
@@ -1438,10 +1452,6 @@ const siteCopy = {
       es: "Aquí quiero enseñar cómo pienso, no solo qué he terminado. Cada ficha está preparada para contar una idea, sus pruebas, sus problemas y lo que aprendí por el camino.",
       en: "I want to show how I think, not only what I have finished. Each case study is ready to tell the story of an idea, its tests, its problems and what I learned along the way.",
     },
-    note: {
-      es: "Algunas fichas aún son espacios de trabajo: sustitúyelas por proyectos y resultados reales.",
-      en: "Some entries are still placeholders; replace them with real projects and outcomes.",
-    },
   },
   documents: {
     eyebrow: {
@@ -1455,10 +1465,6 @@ const siteCopy = {
     intro: {
       es: "Una biblioteca viva de documentos, análisis y pequeños experimentos que muestra cómo paso de una intuición a una experiencia jugable.",
       en: "A living library of documents, analysis and small experiments showing how I turn an intuition into a playable experience.",
-    },
-    note: {
-      es: "Los documentos aún no están publicados; añade un enlace cuando cada pieza esté lista.",
-      en: "The documents are not published yet; add a link when each piece is ready.",
     },
     archive: {
       es: "Explorar archivo",
@@ -1799,6 +1805,13 @@ const projectThemeStyle = (project) =>
     .map(([name, value]) => `--project-${name}:${value}`)
     .join(";");
 
+/* ==========================================================================
+   3. RENDERIZADO DE PÁGINAS Y COMPONENTES
+   ==========================================================================
+   En este bloque convierto los datos anteriores en HTML y conecto sus
+   acciones. Cada función comprueba primero si su contenedor existe, así el
+   mismo script puede funcionar en las dos páginas.
+   ========================================================================== */
 // Construye el caso de estudio seleccionado a partir del parámetro de la URL.
 function renderProjectPage() {
   const target = $("#project-page");
@@ -2012,9 +2025,16 @@ function renderExperiences() {
   });
 }
 
+/* ==========================================================================
+   4. ANIMACIONES, NAVEGACIÓN Y MODALES
+   ==========================================================================
+   En este bloque concentro las interacciones compartidas para no repetir la
+   misma lógica en cada sección del portfolio.
+   ========================================================================== */
 // Configuración mejorada de observador para animar tarjetas y la línea de tiempo
 function setupScrollAnimations() {
   setupTimelineProgress();
+  setupMobileScrollHover();
   const statsTarget = $("#about-stats");
   if (statsTarget && "IntersectionObserver" in window) {
     const statsObserver = new IntersectionObserver(
@@ -2049,6 +2069,39 @@ function setupScrollAnimations() {
     );
     experienceWrappers.forEach((wrapper) => expObserver.observe(wrapper));
   }
+}
+
+// En pantallas táctiles, convierte la posición central del viewport en el
+// equivalente visual del hover para que las tarjetas mantengan su feedback.
+function setupMobileScrollHover() {
+  setupMobileScrollHover.observer?.disconnect();
+
+  if (
+    !window.matchMedia("(max-width: 800px)").matches ||
+    !("IntersectionObserver" in window)
+  ) {
+    return;
+  }
+
+  const cards = document.querySelectorAll(
+    ".skill-card, .project-card, .document-card, .award-card, .experience-card",
+  );
+  if (!cards.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("is-scroll-active", entry.isIntersecting);
+      });
+    },
+    {
+      rootMargin: "-38% 0px -38% 0px",
+      threshold: 0,
+    },
+  );
+
+  cards.forEach((card) => observer.observe(card));
+  setupMobileScrollHover.observer = observer;
 }
 
 // Rellena la línea central según la parte de la timeline que ya ha recorrido el usuario.
@@ -2196,13 +2249,11 @@ function applyStaticLanguage() {
   set("#projects .eyebrow", c.projects.eyebrow);
   set("#projects h2", c.projects.title);
   set("#projects .section-intro", c.projects.intro);
-  set("#projects .content-note", c.projects.note);
   set("#documents .eyebrow", c.documents.eyebrow);
   set("#documents h2", c.documents.title);
   set("#documents .section-intro > p", c.documents.intro);
   set(".documents-toolbar-label", c.documents.archive);
   set(".documents-definition", c.documents.definition);
-  set("#documents .documents-note", c.documents.note);
   document.querySelectorAll("[data-document-filter]").forEach((button) => {
     const key = button.dataset.documentFilter;
     if (c.documents.filters[key])
@@ -2450,15 +2501,13 @@ function setup3DCards() {
   )
     return;
 
-  // Seleccionamos las tarjetas de reconocimientos y experiencia
+  // Selecciono las tarjetas que admiten el efecto 3D.
   const cards = document.querySelectorAll(".award-card, .experience-card");
 
   cards.forEach((card) => {
-    // Si ya tiene el listener, evitamos duplicarlos pero permitimos reasignar si cambian
-    card.onmousemove = null;
-    card.onmouseleave = null;
-
-    card.addEventListener("mousemove", (e) => {
+    // Uso propiedades de evento para que el efecto se pueda reemplazar sin
+    // acumular listeners cada vez que se vuelve a renderizar una sección.
+    card.onmousemove = (e) => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2; // Posición X relativa al centro
       const y = e.clientY - rect.top - rect.height / 2;  // Posición Y relativa al centro
@@ -2473,12 +2522,729 @@ function setup3DCards() {
         rotateY(${rotateY}deg)
         scale3d(1.04, 1.04, 1.04)
       `;
-    });
+    };
 
-    card.addEventListener("mouseleave", () => {
+    card.onmouseleave = () => {
       card.style.transition = "transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease";
       card.style.transform =
         "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+    };
+  });
+}
+
+/* ==========================================================================
+   SIMULACIÓN FÍSICA ADAPTADA (Inflado dramático + Amarilleo progresivo + Shake)
+   ========================================================================== */
+function setupFloatingPhysics() {
+  const container = document.getElementById("floating-physics-container");
+  if (!container) return;
+  const items = container.querySelectorAll(".physics-item:not(.star-bonus-item)");
+  const starEl = container.querySelector(".star-bonus-item");
+  if (!items.length || !starEl) return;
+
+  // Estructura interna (.star-inner) para aislar físicas y transformaciones de escalado
+  let starInnerEl = starEl.querySelector(".star-inner");
+  if (!starInnerEl) {
+    starInnerEl = document.createElement("div");
+    starInnerEl.className = "star-inner";
+    starInnerEl.innerHTML = starEl.innerHTML;
+    starEl.innerHTML = "";
+    starEl.appendChild(starInnerEl);
+  }
+
+  const arcadeToggleBtn = document.getElementById("arcade-toggle-btn");
+  const arcadeCloseBtn = document.getElementById("arcade-close-btn");
+  const freezeBtn = document.getElementById("physics-freeze-btn");
+  const scoreDisplay = document.getElementById("score-display");
+  const scoreCounterWrapper = document.getElementById("physics-score-counter");
+  
+  // ==========================================
+  // GESTIÓN ROBUSTA DEL RÉCORD Y RESETEO
+  // ==========================================
+  let highScoreDisplay = document.getElementById("high-score-display");
+  let highScoreWrapper = document.getElementById("physics-highscore-wrapper");
+  
+  if (!highScoreDisplay && scoreCounterWrapper) {
+    highScoreWrapper = document.createElement("div");
+    highScoreWrapper.id = "physics-highscore-wrapper";
+    highScoreWrapper.className = "physics-highscore-wrapper";
+    highScoreWrapper.style.cssText = "font-size: 0.75rem; opacity: 0.9; margin-top: 3px; font-family: var(--mono); color: #e2e8f0; display: flex; align-items: center; justify-content: center; gap: 6px; pointer-events: auto;";
+    highScoreWrapper.innerHTML = `Récord: <span id="high-score-display" style="color: #ffcc00; font-weight: bold; text-shadow: 0 0 8px rgba(255, 204, 0, 0.6); cursor: pointer; pointer-events: auto;" title="Haz doble clic para reiniciar el récord">0</span>`;
+    scoreCounterWrapper.appendChild(highScoreWrapper);
+    highScoreDisplay = document.getElementById("high-score-display");
+  }
+
+  let highScore = parseInt(localStorage.getItem("physics_arcade_highscore")) || 0;
+  if (highScoreDisplay) {
+    highScoreDisplay.textContent = highScore;
+  }
+
+  if (highScoreDisplay && !highScoreDisplay.dataset.resetInitialized) {
+    highScoreDisplay.dataset.resetInitialized = "true";
+    highScoreDisplay.addEventListener("dblclick", () => {
+      if (confirm("¿Deseas reiniciar tu récord a 0?")) {
+        highScore = 0;
+        localStorage.removeItem("physics_arcade_highscore");
+        highScoreDisplay.textContent = highScore;
+        highScoreDisplay.classList.remove("is-record-glowing-loop");
+      }
+    });
+  }
+
+  let resetRecordBtn = document.getElementById("reset-record-btn");
+  if (!resetRecordBtn && highScoreWrapper) {
+    resetRecordBtn = document.createElement("button");
+    resetRecordBtn.id = "reset-record-btn";
+    resetRecordBtn.textContent = "🔄";
+    resetRecordBtn.title = "Reiniciar récord";
+    resetRecordBtn.style.cssText = "background: none; border: none; cursor: pointer; font-size: 0.7rem; padding: 0; pointer-events: auto;";
+    resetRecordBtn.addEventListener("click", () => {
+      if (confirm("¿Deseas reiniciar tu récord a 0?")) {
+        highScore = 0;
+        localStorage.removeItem("physics_arcade_highscore");
+        if (highScoreDisplay) {
+          highScoreDisplay.textContent = highScore;
+          highScoreDisplay.classList.remove("is-record-glowing-loop");
+        }
+      }
+    });
+    highScoreWrapper.appendChild(resetRecordBtn);
+  }
+
+  let multiplierBadge = document.getElementById("physics-multiplier-badge");
+  if (!multiplierBadge && scoreCounterWrapper) {
+    multiplierBadge = document.createElement("div");
+    multiplierBadge.id = "physics-multiplier-badge";
+    multiplierBadge.className = "physics-multiplier-badge";
+    multiplierBadge.textContent = "x2 ACTIVO";
+    scoreCounterWrapper.appendChild(multiplierBadge);
+  }
+
+  let totalScore = 0;
+  let newRecordCelebrated = false;
+  let comboTimer = null;
+  let warningTimer = null;
+  let multiplierActive = false;
+  let multiplierTimer = null;
+  let multiplierBlinkTimer = null;
+  let lastStarHitTime = 0;
+  let isFrozen = false;
+
+  const bodies = [];
+  let isArcadeActive = false;
+
+  const unfreezePhysics = () => {
+    isFrozen = false;
+    if (freezeBtn) {
+      freezeBtn.classList.remove("is-frozen");
+      freezeBtn.textContent = "⏸️ Congelar física";
+    }
+    bodies.forEach((b) => {
+      if (b.isStar) return;
+      b.vx = (Math.random() - 0.5) * 3;
+      b.vy = (Math.random() - 0.5) * 3;
+      b.el.classList.remove("is-static-column");
+    });
+  };
+
+  if (arcadeToggleBtn && arcadeCloseBtn) {
+    const launchArcade = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      isArcadeActive = true;
+      container.classList.add("is-arcade-active");
+      arcadeCloseBtn.hidden = false;
+      arcadeToggleBtn.style.display = "none";
+      
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+      document.body.style.height = "100%";
+      
+      if (isFrozen) { unfreezePhysics(); }
+    };
+
+    const closeArcade = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      isArcadeActive = false;
+      container.classList.remove("is-arcade-active");
+      arcadeCloseBtn.hidden = true;
+      arcadeToggleBtn.style.display = "";
+      
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.height = "";
+    };
+
+    arcadeToggleBtn.addEventListener("click", launchArcade);
+    arcadeToggleBtn.addEventListener("touchstart", launchArcade, { passive: false });
+    arcadeCloseBtn.addEventListener("click", closeArcade);
+    arcadeCloseBtn.addEventListener("touchstart", closeArcade, { passive: false });
+  }
+
+  if (freezeBtn) {
+    freezeBtn.addEventListener("click", () => {
+      isFrozen = !isFrozen;
+      freezeBtn.classList.toggle("is-frozen", isFrozen);
+      freezeBtn.textContent = isFrozen ? "▶️ Reanudar física" : "⏸️ Congelar física";
+
+      if (isFrozen) {
+        if (starBody.active) deactivateStar();
+        
+        const cRect = container.getBoundingClientRect();
+        const isMobile = window.innerWidth <= 800;
+        const boundW = isArcadeActive && isMobile ? window.innerWidth : (cRect.width || container.offsetWidth || 800);
+        const startX = boundW - 140; 
+        const startY = 140;          
+        const gapY = 120;            
+
+        let currentItemIndex = 0;
+        bodies.forEach((b) => {
+          if (b.isStar) return;
+          b.vx = 0;
+          b.vy = 0;
+          b.x = startX;
+          b.y = startY + (currentItemIndex * gapY);
+          b.scale = 1;
+          currentItemIndex++;
+          b.el.classList.add("is-static-column");
+        });
+      } else {
+        unfreezePhysics();
+      }
+    });
+  }
+
+  items.forEach((el) => {
+    const size = el.offsetWidth || 100;
+    const cRect = container.getBoundingClientRect();
+    const initialWidth = window.innerWidth <= 800 ? window.innerWidth : (cRect.width || container.offsetWidth || 800);
+    const initialHeight = window.innerWidth <= 800 ? window.innerHeight : (cRect.height || container.offsetHeight || 600);
+    
+    const minX = initialWidth * 0.45;
+    const x = minX + Math.random() * (initialWidth - minX - size - 50);
+    const y = Math.random() * (initialHeight - size - 100) + 50;
+    
+    bodies.push({
+      el,
+      x,
+      y,
+      vx: (Math.random() - 0.5) * 3.5,
+      vy: (Math.random() - 0.5) * 3.5,
+      radius: size / 2,
+      isDragging: false,
+      scale: 1,
+      isStar: false
     });
   });
+
+  const starSize = starEl.offsetWidth || 75;
+  const starBody = {
+    el: starEl,
+    x: 0,
+    y: 0,
+    vx: 2,
+    vy: 2,
+    radius: starSize / 2,
+    isDragging: false,
+    scale: 1,
+    isStar: true,
+    active: false,
+    hits: 0,
+    timer: null,
+    warningTimer: null
+  };
+  bodies.push(starBody);
+
+  let activeBody = null;
+  let mouseX = 0;
+  let mouseY = 0;
+  let lastMouseX = 0;
+  let lastMouseY = 0;
+  let mouseVx = 0;
+  let mouseVy = 0;
+  let totalReboundsCount = 0;
+
+  const spawnPopupText = (text, x, y, color = "#b8d96b") => {
+    const popup = document.createElement("div");
+    popup.className = "physics-popup-text";
+    popup.textContent = text;
+    popup.style.left = `${x}px`;
+    popup.style.top = `${y}px`;
+    popup.style.color = color;
+    container.appendChild(popup);
+    setTimeout(() => popup.remove(), 700);
+  };
+
+  // Función para activar la sacudida de pantalla si el x2 está activo
+  const triggerScreenShake = (intensity = 1) => {
+    if (!multiplierActive) return;
+    
+    const shakeX = Math.min(10, Math.max(3, intensity * 2.5));
+    const shakeY = Math.min(8, Math.max(2, intensity * 2));
+    
+    container.style.setProperty("--shake-x", `${shakeX}px`);
+    container.style.setProperty("--shake-y", `${shakeY}px`);
+    
+    container.classList.remove("is-shaking");
+    void container.offsetWidth; // Force Reflow
+    container.classList.add("is-shaking");
+    
+    setTimeout(() => container.classList.remove("is-shaking"), 180);
+  };
+
+  // Genera la estela visible y centrada de polvo de hada blanco
+  const spawnFairyDust = (centerX, centerY) => {
+    for (let i = 0; i < 12; i++) {
+      const dust = document.createElement("div");
+      dust.className = "fairy-dust-particle";
+      dust.style.left = `${centerX}px`;
+      dust.style.top = `${centerY}px`;
+      
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 25 + Math.random() * 55;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+      
+      dust.style.setProperty("--tx", `${tx}px`);
+      dust.style.setProperty("--ty", `${ty}px`);
+      dust.style.animationDelay = `${Math.random() * 0.05}s`;
+      
+      container.appendChild(dust);
+      setTimeout(() => dust.remove(), 650);
+    }
+  };
+
+  const showCenterRecordBanner = (scoreValue) => {
+    const banner = document.createElement("div");
+    banner.className = "physics-center-banner";
+    banner.innerHTML = `<h2>NEW RECORD!</h2><p>Puntuación: ${scoreValue}</p>`;
+    container.appendChild(banner);
+    setTimeout(() => banner.remove(), 1600);
+  };
+
+  const triggerStarExplosion = (centerX, centerY) => {
+    for (let i = 0; i < 16; i++) {
+      const particle = document.createElement("div");
+      particle.className = "star-explosion-particle";
+      particle.style.left = `${centerX}px`;
+      particle.style.top = `${centerY}px`;
+      
+      const angle = (Math.PI * 2 / 16) * i;
+      const distance = 80 + Math.random() * 70;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+      
+      particle.style.setProperty("--tx", `${tx}px`);
+      particle.style.setProperty("--ty", `${ty}px`);
+      
+      container.appendChild(particle);
+      setTimeout(() => particle.remove(), 600);
+    }
+  };
+
+  const resetCombo = () => {
+    totalScore = 0;
+    newRecordCelebrated = false; 
+    if (scoreDisplay) scoreDisplay.textContent = totalScore;
+    
+    if (highScoreDisplay) {
+      highScoreDisplay.classList.remove("is-record-glowing-loop");
+    }
+
+    container.classList.remove("is-urgent-warning");
+    if (scoreCounterWrapper) {
+      scoreCounterWrapper.classList.remove("is-urgent");
+      scoreCounterWrapper.style.opacity = "0.4";
+      setTimeout(() => { if (scoreCounterWrapper) scoreCounterWrapper.style.opacity = "1"; }, 300);
+    }
+  };
+
+  const addScore = (points, x, y, color) => {
+    const finalPoints = multiplierActive ? points * 2 : points;
+    totalScore += finalPoints;
+    totalReboundsCount++;
+    if (scoreDisplay) scoreDisplay.textContent = totalScore;
+    
+    if (totalScore > highScore) {
+      highScore = totalScore;
+      localStorage.setItem("physics_arcade_highscore", highScore);
+      if (highScoreDisplay) {
+        highScoreDisplay.textContent = highScore;
+        highScoreDisplay.classList.add("is-record-glowing-loop");
+      }
+      
+      if (!newRecordCelebrated) {
+        newRecordCelebrated = true;
+        showCenterRecordBanner(highScore);
+      }
+    }
+    
+    if (scoreCounterWrapper) {
+      scoreCounterWrapper.classList.remove("is-urgent");
+      container.classList.remove("is-urgent-warning");
+      scoreCounterWrapper.classList.add("is-bump");
+      setTimeout(() => scoreCounterWrapper.classList.remove("is-bump"), 150);
+    }
+    
+    spawnPopupText(multiplierActive ? `+${finalPoints} (x2)` : `+${finalPoints}`, x, y, color);
+
+    if (comboTimer) clearTimeout(comboTimer);
+    if (warningTimer) clearTimeout(warningTimer);
+
+    warningTimer = setTimeout(() => {
+      if (scoreCounterWrapper && totalScore > 0) {
+        scoreCounterWrapper.classList.add("is-urgent");
+        container.classList.add("is-urgent-warning");
+      }
+    }, 1500);
+
+    comboTimer = setTimeout(resetCombo, 3000);
+
+    if (!starBody.active && totalReboundsCount > 4 && Math.random() < 0.15) {
+      activateStar();
+    }
+  };
+
+  const activateMultiplierX2 = () => {
+    multiplierActive = true;
+    container.classList.add("is-multiplier-active");
+    container.classList.remove("is-multiplier-ending");
+
+    if (multiplierBadge) {
+      multiplierBadge.classList.add("is-active");
+      multiplierBadge.classList.remove("is-blinking");
+    }
+
+    if (multiplierTimer) clearTimeout(multiplierTimer);
+    if (multiplierBlinkTimer) clearTimeout(multiplierBlinkTimer);
+
+    // A los 4.5s activa el aviso parpadeante sutil de borde y badge
+    multiplierBlinkTimer = setTimeout(() => {
+      if (multiplierActive) {
+        container.classList.add("is-multiplier-ending");
+        if (multiplierBadge) multiplierBadge.classList.add("is-blinking");
+      }
+    }, 4500);
+
+    // A los 6.5s finaliza el multiplicador
+    multiplierTimer = setTimeout(() => {
+      multiplierActive = false;
+      container.classList.remove("is-multiplier-active", "is-multiplier-ending");
+      if (multiplierBadge) {
+        multiplierBadge.classList.remove("is-active", "is-blinking");
+      }
+    }, 6500);
+  };
+
+  const activateStar = () => {
+    starBody.active = true;
+    starBody.hits = 0;
+    starBody.scale = 1;
+    starEl.classList.remove("hit-level-1", "hit-level-2", "hit-level-3", "hit-level-4");
+    if (starInnerEl) starInnerEl.style.transform = `scale(1)`;
+    lastStarHitTime = 0;
+    
+    const cRect = container.getBoundingClientRect();
+    const isMobile = window.innerWidth <= 800;
+    const boundW = isMobile ? window.innerWidth : (cRect.width || container.offsetWidth || 800);
+    const boundH = isMobile ? window.innerHeight : (cRect.height || container.offsetHeight || 600);
+    
+    starBody.x = (boundW * 0.45) + Math.random() * (boundW * 0.5 - starSize);
+    starBody.y = Math.random() * (boundH - starSize - 100) + 50;
+    starBody.vx = (Math.random() - 0.5) * 4.5;
+    starBody.vy = (Math.random() - 0.5) * 4.5;
+    starEl.style.display = "block";
+    starEl.classList.add("star-spawning");
+    starEl.classList.remove("is-disappearing");
+
+    if (starBody.timer) clearTimeout(starBody.timer);
+    if (starBody.warningTimer) clearTimeout(starBody.warningTimer);
+
+    // A los 8.5s activa el parpadeo de tensión antes de desaparecer
+    starBody.warningTimer = setTimeout(() => {
+      if (starBody.active) {
+        starEl.classList.add("is-disappearing");
+      }
+    }, 8500);
+
+    starBody.timer = setTimeout(() => { deactivateStar(); }, 12000);
+  };
+
+  const deactivateStar = () => {
+    starBody.active = false;
+    starEl.style.display = "none";
+    starEl.classList.remove("is-disappearing", "hit-level-1", "hit-level-2", "hit-level-3", "hit-level-4");
+    if (starBody.timer) clearTimeout(starBody.timer);
+    if (starBody.warningTimer) clearTimeout(starBody.warningTimer);
+  };
+
+  bodies.forEach((body) => {
+    const onStart = (clientX, clientY) => {
+      if (isFrozen) return; 
+      const isMobile = window.innerWidth <= 800;
+      if (isMobile && !isArcadeActive) return;
+
+      body.isDragging = true;
+      activeBody = body;
+      body.el.classList.add("is-dragging");
+      const cRect = container.getBoundingClientRect();
+      mouseX = isArcadeActive && isMobile ? clientX : clientX - cRect.left;
+      mouseY = isArcadeActive && isMobile ? clientY : clientY - cRect.top;
+      lastMouseX = mouseX;
+      lastMouseY = mouseY;
+    };
+
+    body.el.addEventListener("mousedown", (e) => { e.preventDefault(); onStart(e.clientX, e.clientY); });
+    body.el.addEventListener("touchstart", (e) => { if (e.touches.length > 0) onStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+  });
+
+  const onMove = (clientX, clientY) => {
+    if (!activeBody || isFrozen) return;
+    const isMobile = window.innerWidth <= 800;
+    const cRect = container.getBoundingClientRect();
+    const newX = isArcadeActive && isMobile ? clientX : clientX - cRect.left;
+    const newY = isArcadeActive && isMobile ? clientY : clientY - cRect.top;
+
+    mouseVx = newX - lastMouseX;
+    mouseVy = newY - lastMouseY;
+    lastMouseX = newX;
+    lastMouseY = newY;
+    mouseX = newX;
+    mouseY = newY;
+  };
+
+  window.addEventListener("mousemove", (e) => onMove(e.clientX, e.clientY));
+  window.addEventListener("touchmove", (e) => { if (e.touches.length > 0) onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+
+  const onEnd = () => {
+    if (activeBody) {
+      activeBody.isDragging = false;
+      activeBody.vx = mouseVx * 0.8;
+      activeBody.vy = mouseVy * 0.8;
+      activeBody.el.classList.remove("is-dragging");
+      activeBody = null;
+    }
+  };
+
+  window.addEventListener("mouseup", onEnd);
+  window.addEventListener("touchend", onEnd);
+
+  const updatePhysics = () => {
+    const isMobile = window.innerWidth <= 800;
+    if (isMobile && !isArcadeActive) {
+      requestAnimationFrame(updatePhysics);
+      return;
+    }
+
+    if (isFrozen) {
+      bodies.forEach((b) => {
+        if (!b.isStar) {
+          b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0px) scale(1)`;
+        } else {
+          b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0px)`;
+        }
+      });
+      requestAnimationFrame(updatePhysics);
+      return;
+    }
+
+    const cRect = container.getBoundingClientRect();
+    const width = isArcadeActive && isMobile ? window.innerWidth : (cRect.width || container.offsetWidth || 800);
+    const height = isArcadeActive && isMobile ? window.innerHeight : (cRect.height || container.offsetHeight || 600);
+
+    let obstacleBoxes = [];
+    if (!isMobile || !isArcadeActive) {
+      const copyElements = document.querySelectorAll(".hero-copy h1, .hero-copy .hero-lede, .hero-copy .eyebrow");
+      if (copyElements.length > 0) {
+        let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
+        copyElements.forEach(el => {
+          const eRect = el.getBoundingClientRect();
+          minLeft = Math.min(minLeft, eRect.left - cRect.left - 10);
+          minTop = Math.min(minTop, eRect.top - cRect.top - 10);
+          maxRight = Math.max(maxRight, eRect.right - cRect.left + 10);
+          maxBottom = Math.max(maxBottom, eRect.bottom - cRect.top + 10);
+        });
+        obstacleBoxes.push({ left: minLeft, right: maxRight, top: minTop, bottom: maxBottom });
+      }
+    }
+
+    for (let i = 0; i < bodies.length; i++) {
+      let b = bodies[i];
+      if (b.isStar && !b.active) continue;
+
+      let diameter = b.radius * 2;
+      
+      // Amortiguación del escalado de impacto en fichas normales
+      if (!b.isStar) {
+        b.scale += (1 - b.scale) * 0.1;
+      }
+
+      if (b === activeBody) {
+        const targetX = mouseX - b.radius;
+        const targetY = mouseY - b.radius;
+        b.vx = (targetX - b.x) * 0.3;
+        b.vy = (targetY - b.y) * 0.3;
+        b.x += b.vx;
+        b.y += b.vy;
+      } else {
+        b.x += b.vx;
+        b.y += b.vy;
+        b.vx *= 0.99;
+        b.vy *= 0.99;
+        b.vx += (Math.random() - 0.5) * 0.05;
+        b.vy += (Math.random() - 0.5) * 0.05;
+
+        let hitWall = false;
+        if (b.x < 0) { b.x = 0; b.vx *= -0.8; hitWall = true; }
+        if (b.x > width - diameter) { b.x = width - diameter; b.vx *= -0.8; hitWall = true; }
+        if (b.y < 0) { b.y = 0; b.vy *= -0.8; hitWall = true; }
+        if (b.y > height - diameter) { b.y = height - diameter; b.vy *= -0.8; hitWall = true; }
+
+        if (hitWall && (Math.abs(b.vx) > 1.5 || Math.abs(b.vy) > 1.5) && !b.isStar) {
+          const impactSpeed = Math.hypot(b.vx, b.vy);
+          if (impactSpeed > 2.8) {
+            triggerScreenShake(impactSpeed * 0.6);
+          }
+          if (b !== activeBody) { addScore(10, b.x + b.radius, b.y, "#ff6b4a"); }
+          b.scale = 1.15;
+          b.el.classList.add("is-impacted");
+          setTimeout(() => b.el.classList.remove("is-impacted"), 150);
+        }
+      }
+
+      obstacleBoxes.forEach(box => {
+        let bCenterX = b.x + b.radius;
+        let bCenterY = b.y + b.radius;
+
+        if (bCenterX > box.left && bCenterX < box.right && bCenterY > box.top && bCenterY < box.bottom) {
+          let dLeft = Math.abs(bCenterX - box.left);
+          let dRight = Math.abs(box.right - bCenterX);
+          let dTop = Math.abs(bCenterY - box.top);
+          let dBottom = Math.abs(box.bottom - bCenterY);
+          let minD = Math.min(dLeft, dRight, dTop, dBottom);
+
+          if (minD === dLeft) { b.x = box.left - diameter; b.vx *= -0.8; }
+          else if (minD === dRight) { b.x = box.right; b.vx *= -0.8; }
+          else if (minD === dTop) { b.y = box.top - diameter; b.vy *= -0.8; }
+          else if (minD === dBottom) { b.y = box.bottom; b.vy *= -0.8; }
+          
+          if (!b.isStar && b !== activeBody) {
+            const impactSpeed = Math.hypot(b.vx, b.vy);
+            if (impactSpeed > 2.8) {
+              triggerScreenShake(impactSpeed * 0.6);
+            }
+            addScore(15, bCenterX, bCenterY, "#ff6b4a");
+            b.scale = 1.2;
+            b.el.classList.add("is-impacted");
+            setTimeout(() => b.el.classList.remove("is-impacted"), 150);
+          }
+        }
+      });
+
+      for (let j = i + 1; j < bodies.length; j++) {
+        let b2 = bodies[j];
+        if (b2.isStar && !b2.active) continue;
+
+        let dx = (b2.x + b2.radius) - (b.x + b.radius);
+        let dy = (b2.y + b2.radius) - (b.y + b.radius);
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        let minDist = b.radius + b2.radius;
+
+        if (dist < minDist) {
+          let overlap = minDist - dist;
+          let nx = dx / (dist || 1);
+          let ny = dy / (dist || 1);
+
+          if (b !== activeBody && b2 !== activeBody) {
+            b.x -= nx * overlap * 0.5;
+            b.y -= ny * overlap * 0.5;
+            b2.x += nx * overlap * 0.5;
+            b2.y += ny * overlap * 0.5;
+          } else if (b === activeBody) {
+            b2.x += nx * overlap;
+            b2.y += ny * overlap;
+          } else {
+            b.x -= nx * overlap;
+            b.y -= ny * overlap;
+          }
+
+          let kx = b.vx - b2.vx;
+          let ky = b.vy - b2.vy;
+          let p = (2 * (nx * kx + ny * ky)) / 2;
+
+          let impactSpeed = Math.abs(p);
+          if (impactSpeed > 0.8) {
+            let midX = (b.x + b2.x) / 2 + b.radius;
+            let midY = (b.y + b2.y) / 2 + b.radius;
+            
+            if (b.isStar || b2.isStar) {
+              let starObj = b.isStar ? b : b2;
+              
+              const now = Date.now();
+              if (!starObj.isDragging && now - lastStarHitTime > 350) {
+                lastStarHitTime = now;
+                starObj.hits++;
+                
+                // Inflado masivo y progresivo de la estrella (1.0 -> 1.4 -> 1.8 -> 2.2 -> 2.6)
+                starObj.scale = 1 + (starObj.hits * 0.4);
+                
+                // Añade clases de nivel para intensificar progresivamente el color amarillo y el brillo
+                if (starObj.hits > 0 && starObj.hits < 5) {
+                  starEl.classList.add(`hit-level-${starObj.hits}`);
+                }
+
+                // Estela de polvo de hada
+                spawnFairyDust(midX, midY);
+
+                starEl.classList.add("star-hit-glow");
+                setTimeout(() => starEl.classList.remove("star-hit-glow"), 180);
+
+                addScore(50, midX, midY, "#ffcc00");
+                spawnPopupText(`¡HIT ESTRELLA! (${starObj.hits}/5)`, midX, midY, "#ffcc00");
+
+                if (starObj.hits >= 5) {
+                  triggerStarExplosion(starObj.x + starObj.radius, starObj.y + starObj.radius);
+                  activateMultiplierX2();
+                  spawnPopupText("¡EXPLOSIÓN ESTELAR x2!", midX, midY - 20, "#ffcc00");
+                  deactivateStar();
+                }
+              }
+            } else if (b !== activeBody && b2 !== activeBody) {
+              if (impactSpeed > 2.2) {
+                triggerScreenShake(impactSpeed);
+              }
+              let pointsEarned = Math.round(impactSpeed * 25) + 25;
+              addScore(pointsEarned, midX, midY, "#b8d96b");
+              b.scale = 1.25;
+              b2.scale = 1.25;
+              b.el.classList.add("is-impacted");
+              b2.el.classList.add("is-impacted");
+              setTimeout(() => {
+                b.el.classList.remove("is-impacted");
+                b2.el.classList.remove("is-impacted");
+              }, 150);
+            }
+          }
+
+          if (b !== activeBody) { b.vx -= p * nx * 0.8; b.vy -= p * ny * 0.8; }
+          if (b2 !== activeBody) { b2.vx += p * nx * 0.8; b2.vy += p * ny * 0.8; }
+        }
+      }
+
+      // Aplicación de transformaciones
+      if (b.isStar) {
+        b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0px)`;
+        if (starInnerEl) {
+          starInnerEl.style.transform = `scale(${b.scale})`;
+        }
+      } else {
+        b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0px) scale(${b.scale})`;
+      }
+    }
+
+    requestAnimationFrame(updatePhysics);
+  };
+
+  requestAnimationFrame(updatePhysics);
 }

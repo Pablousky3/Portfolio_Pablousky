@@ -1,5 +1,8 @@
 <!doctype html>
-<!-- Documento principal del portfolio: idioma, metadatos y recursos compartidos. -->
+<!--
+  Esta es la página principal del portfolio. Mantengo aquí la estructura
+  semántica y dejo el contenido repetitivo para script.js.
+-->
 <html lang="es">
   <head>
     <!-- Metadatos del sitio y conexión con la hoja de estilos. -->
@@ -10,7 +13,9 @@
       content="Portfolio de Pablo Menéndez-Morán, diseñador y desarrollador de videojuegos."
     />
     <title>Pablo · Game Design / Dev</title>
-    <link rel="stylesheet" href="styles.css?v=29" />
+    <!-- Favicon: reemplaza "data:," por la ruta del icono que elijas. -->
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="site-shell">
@@ -64,6 +69,32 @@
       <main id="top">
         <!-- Portada: presentación, propuesta profesional y acceso a proyectos. -->
         <section class="hero-section">
+          <div class="floating-physics-container" id="floating-physics-container">
+            <!-- Botón sutil de congelar / accesibilidad -->
+            <button type="button" class="physics-freeze-btn" id="physics-freeze-btn" aria-label="Pausar movimiento de recuadros">
+              ⏸️ Congelar física
+            </button>
+            <!-- Botón de juego móvil (arriba a la derecha) -->
+            <button type="button" class="arcade-mode-btn" id="arcade-toggle-btn">
+              🕹️ Jugar con físicas
+            </button>
+
+            <!-- Botón para cerrar el modo juego -->
+            <button type="button" class="arcade-close-btn" id="arcade-close-btn" hidden>✕ Salir</button>
+
+            <!-- Contador flotante de combos/puntos de física -->
+            <div class="physics-score-counter" id="physics-score-counter">
+              <span class="score-label">Puntos de Rebote</span>
+              <span class="score-value" id="score-display">0</span>
+            </div>
+
+            <img src="Imagenes/Otras cosas/icon-programacion.png" class="physics-item" alt="Programación" draggable="false">
+            <img src="Imagenes/Otras cosas/icon-diseno.png" class="physics-item" alt="Diseño" draggable="false">
+            <img src="Imagenes/Otras cosas/icon-experiencia.png" class="physics-item" alt="Experiencia" draggable="false">
+            <img src="Imagenes/Otras cosas/icon-videojuegos.png" class="physics-item" alt="Videojuegos" draggable="false">
+            <img src="Imagenes/Otras cosas/icon-estrella-naranja.png" class="physics-item star-bonus-item" alt="Estrella Bonus" draggable="false" style="display: none;">
+          </div>
+
           <div class="hero-copy">
             <p class="eyebrow">Diseñador y desarrollador de videojuegos</p>
             <h1>
@@ -84,8 +115,9 @@
           <div
             class="hero-visual"
             role="img"
-            aria-label="Escritorio de diseño de videojuegos"
+            aria-label="Cuadrícula oscura de un nivel de videojuego"
           ></div>
+
         </section>
 
         <!-- Perfil: presentación personal, estadísticas y método de trabajo. -->
@@ -165,10 +197,6 @@
             </p>
           </div>
           <div class="projects-list" id="projects-list"></div>
-          <p class="content-note">
-            Estos espacios esperan tus proyectos reales. La idea es enseñar el
-            proceso completo, no rellenar la página con trabajos inventados.
-          </p>
         </section>
 
         <!-- Investigación: biblioteca de documentos con filtros por categoría. -->
@@ -245,10 +273,6 @@
             </div>
           </div>
           <div class="documents-grid" id="documents-grid"></div>
-          <p class="content-note documents-note">
-            Cada archivo puede crecer con nuevas pruebas, prototipos, análisis y
-            documentos de proceso.
-          </p>
         </section>
 
         <!-- Reconocimientos: tarjetas y referencias externas generadas por JavaScript. -->
@@ -338,6 +362,6 @@
     </div>
 
     <!-- Lógica de renderizado, idioma, navegación, filtros y ventanas modales. -->
-    <script src="script.js?v=24"></script>
+      <script src="script.js"></script>
   </body>
 </html>

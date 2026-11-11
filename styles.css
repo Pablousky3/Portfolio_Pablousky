@@ -1,3 +1,10 @@
+/* ==========================================================================
+   1. BASE, TIPOGRAFÍA Y CABECERA
+   ==========================================================================
+   En este archivo concentro toda la identidad visual del portfolio.
+   Organizo las reglas por componentes y dejo las reglas responsive junto a
+   los componentes que modifican para que sea más fácil mantenerlas.
+   ========================================================================== */
 /* Fuentes tipográficas que definen la jerarquía editorial del sitio. */
 @import url(https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap);
 /* Paleta, tipografías y tokens compartidos para mantener coherencia visual. */
@@ -13,7 +20,6 @@
   --muted: #b9b8b3;
   --coral: #ff6b4a;
   --lime: #b8d96b;
-  --amber: #e6bb62;
   --line: rgba(247, 243, 236, 0.16);
   --display: "Space Grotesk", sans-serif;
   --mono: "IBM Plex Mono", monospace;
@@ -43,8 +49,8 @@ button {
 .site-shell {
   overflow: hidden;
 }
-.brand,
 /* Cabecera fija, marca, navegación y adaptación del menú móvil. */
+.brand,
 .topbar {
   display: flex;
   align-items: center;
@@ -386,14 +392,7 @@ h2 em {
   font: 600 0.64rem var(--mono);
   text-transform: uppercase;
 }
-.content-note {
-  color: var(--amber);
-  border-left: 2px solid var(--amber);
-  padding: 11px 15px;
-  margin: 24px 0 0;
-  font-size: 0.8rem;
-  line-height: 1.6;
-}/* Formación y experiencia en formato cronológico y adaptable. */
+/* Formación y experiencia en formato cronológico y adaptable. */
 
 /* Llamada de contacto, enlaces profesionales y cierre visual. */
 .contact-section {
@@ -832,6 +831,7 @@ section[id] {
   min-height: calc(100svh - 78px);
 }
 .hero-section {
+  position: relative;
   display: block;
   overflow: hidden;
 }
@@ -851,7 +851,7 @@ section[id] {
   inset: 0;
   z-index: 0;
   min-height: 0;
-  background-image: url(/manus-storage/arcade-editorial-hero_083ebaf9.png);
+  background-image: url("Imagenes/level-grid-background.png");
   background-size: cover;
   background-position: center;
 }
@@ -860,11 +860,11 @@ section[id] {
   background:
     linear-gradient(
       90deg,
-      rgba(17, 24, 32, 0.78) 0,
-      rgba(17, 24, 32, 0.3) 62%,
-      rgba(17, 24, 32, 0.48) 100%
+      rgba(17, 24, 32, 0.22) 0,
+      rgba(17, 24, 32, 0.1) 62%,
+      rgba(17, 24, 32, 0.18) 100%
     ),
-    linear-gradient(0deg, rgba(17, 24, 32, 0.58), transparent 55%);
+    linear-gradient(0deg, rgba(17, 24, 32, 0.24), transparent 55%);
 }
 @media (max-width: 800px) {
   .hero-copy,
@@ -3396,79 +3396,9 @@ body::before {
   background-size: 72px 72px;
   mask-image: linear-gradient(180deg, #000, transparent 68%);
 }
-.hero-section {
-  perspective: 1600px;
-  isolation: isolate;
-}
-.hero-section::after {
-  content: "01 / 06 SCROLL TO EXPLORE";
-  position: absolute;
-  right: 5vw;
-  bottom: 28px;
-  z-index: 4;
-  color: rgba(247, 243, 236, 0.64);
-  font: 500 0.58rem var(--mono);
-  letter-spacing: 0.12em;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-.hero-copy {
-  transform-style: preserve-3d;
-}
-.hero-copy::before,
-.hero-visual::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-}
-.hero-copy::before {
-  top: 13%;
-  right: 3%;
-  width: clamp(130px, 15vw, 230px);
-  aspect-ratio: 1;
-  border: 1px solid rgba(255, 107, 74, 0.45);
-  border-radius: 50%;
-  opacity: 0.65;
-  transform: translateZ(28px);
-  box-shadow:
-    0 0 0 18px rgba(255, 107, 74, 0.045),
-    0 0 0 42px rgba(255, 107, 74, 0.025);
-}
 .hero-copy h1 {
   position: relative;
   text-shadow: 0 18px 48px rgba(5, 9, 12, 0.22);
-  transform: translateZ(34px);
-}
-.hero-copy .button,
-.hero-copy .hero-lede {
-  position: relative;
-  transform: translateZ(20px);
-}
-.hero-visual {
-  will-change: transform;
-  transform: translate3d(
-      var(--hero-x, 0px),
-      calc(var(--hero-y, 0px) + var(--hero-scroll, 0px)),
-      0
-    )
-    scale(1.04);
-}
-.hero-visual::before {
-  inset: 0;
-  z-index: 2;
-  background:
-    radial-gradient(
-      circle at 72% 42%,
-      rgba(255, 107, 74, 0.14),
-      transparent 26%
-    ),
-    linear-gradient(
-      120deg,
-      transparent 48%,
-      rgba(184, 217, 107, 0.1) 50%,
-      transparent 52%
-    );
-  mix-blend-mode: screen;
 }
 .hero-scroll-cue {
   position: relative;
@@ -3536,10 +3466,6 @@ body::before {
     0 32px 90px rgba(0, 0, 0, 0.4);
 }
 @media (max-width: 800px) {
-  .hero-section::after {
-    right: 18px;
-    bottom: 18px;
-  }
   .documents-toolbar {
     top: 68px;
     margin-inline: -5vw;
@@ -3547,23 +3473,12 @@ body::before {
     border-right: 0;
     border-left: 0;
   }
-  .hero-copy::before {
-    top: 10%;
-    right: 8%;
-    width: 120px;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-copy::before,
   .hero-scroll-cue,
   .hero-scroll-cue::before,
-  .hero-section::after,
-  .hero-visual::before,
   .modal-backdrop:not([hidden]) .portfolio-modal,
   body::before {
-    transform: none !important;
-  }
-  .hero-visual {
     transform: none !important;
   }
   .documents-toolbar {
@@ -3576,18 +3491,6 @@ body::before {
 .project-study-section .project-gallery-item,
 .project-study-section .project-learned-content {
   will-change: opacity, transform;
-}
-.hero-section {
-  position: relative;
-}
-.hero-visual {
-  background-position: calc(50% + var(--hero-bg-x, 0px))
-    calc(50% + var(--hero-bg-y, 0px) + var(--hero-bg-scroll, 0px));
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-visual {
-    background-position: 50% 50%;
-  }
 }
 .site-shell,
 body,
@@ -4124,11 +4027,6 @@ html {
 
 .hero-section {
   background-color: var(--ink);
-  background-image:
-    linear-gradient(90deg, var(--game-grid-dark) 1px, transparent 1px),
-    linear-gradient(var(--game-grid-dark) 1px, transparent 1px),
-    radial-gradient(circle at 76% 12%, rgba(255, 107, 74, 0.08), transparent 32%);
-  background-size: 44px 44px, 44px 44px, auto;
 }
 
 .about-section {
@@ -4287,4 +4185,774 @@ html {
   .contact-section {
     background-size: 32px 32px, 32px 32px, auto, auto;
   }
+}
+
+/* --- Tarjetas de reconocimientos: lectura cómoda en pantallas pequeñas --- */
+@media (max-width: 800px) {
+  .awards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .award-card-copy {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .awards-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .award-card img {
+    aspect-ratio: 16 / 10;
+  }
+
+  .award-card-copy {
+    min-height: 142px;
+    padding: 20px 18px 18px;
+  }
+
+  .award-card-copy .award-card-title {
+    max-width: none;
+    font-size: 1.25rem;
+  }
+}
+
+
+/* --- Estilos para los elementos flotantes interactivos de la portada --- */
+.floating-physics-container {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none; /* Permite hacer clic en los elementos de debajo, los hijos activan sus eventos */
+  overflow: hidden;
+}
+
+.physics-item {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 2px solid rgba(247, 243, 236, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  cursor: grab;
+  pointer-events: auto;
+  user-select: none;
+  touch-action: none;
+  will-change: transform, filter;
+  transition: filter 0.1s ease;
+}
+
+.physics-item:active {
+  cursor: grabbing;
+}
+
+.physics-item.is-dragging {
+  border-color: var(--coral);
+  box-shadow: 0 15px 35px rgba(255, 107, 74, 0.4);
+  z-index: 10;
+}
+
+.physics-item.is-impacted {
+  filter: brightness(1.5) drop-shadow(0 0 15px rgba(255, 107, 74, 0.8));
+}
+
+@media (max-width: 800px) {
+  .physics-item {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+
+/* --- Contenedor de la puntuación y récord original (arriba a la derecha) --- */
+.physics-score-counter {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none; /* Bloquea clics en el contenedor global, pero se habilita en el récord mediante JS */
+  font-family: var(--mono);
+  user-select: none;
+}
+
+.physics-score-counter .score-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.physics-score-counter .score-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--coral);
+  font-family: var(--display);
+  line-height: 1;
+  transition: transform 0.1s ease, color 0.3s ease;
+}
+
+.physics-score-counter.is-bump .score-value {
+  transform: scale(1.25);
+  color: var(--lime);
+}
+
+/* --- Cartel de nuevo récord con efectos Arcade Retro avanzados --- */
+.physics-center-banner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  z-index: 30;
+  background: rgba(13, 17, 23, 0.96);
+  border: 3px solid #ffcc00;
+  box-shadow: 0 0 25px rgba(255, 204, 0, 0.5), 4px 4px 0px #000000, inset 0 0 15px rgba(255, 204, 0, 0.3);
+  padding: 18px 32px;
+  text-align: center;
+  pointer-events: none;
+  font-family: var(--mono);
+  image-rendering: pixelated;
+  overflow: hidden;
+  animation: arcadeBannerPop 1.6s steps(12, end) forwards, arcadeShake 0.2s ease-in-out infinite;
+}
+
+/* Efecto de líneas de escaneo estilo pantalla CRT antigua */
+.physics-center-banner::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+  background-size: 100% 4px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.physics-center-banner h2 {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  color: #ffcc00;
+  text-shadow: 2px 2px 0px #b84b35, -2px -2px 0px #357db8; /* Efecto cromático arcade */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: arcadeColorCycle 0.8s steps(4, end) infinite;
+}
+
+.physics-center-banner p {
+  position: relative;
+  z-index: 3;
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-shadow: 1px 1px 0px #000;
+}
+
+/* Animación de entrada y salida */
+@keyframes arcadeBannerPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+/* Pequeño temblequeo de vibración arcade */
+@keyframes arcadeShake {
+  0% { transform: translate(-50%, -50%) translate(0, 0); }
+  25% { transform: translate(-50%, -50%) translate(-1px, 1px); }
+  50% { transform: translate(-50%, -50%) translate(1px, -1px); }
+  75% { transform: translate(-50%, -50%) translate(-1px, -1px); }
+  100% { transform: translate(-50%, -50%) translate(0, 0); }
+}
+
+/* Ciclo de parpadeo de colores neón retro */
+@keyframes arcadeColorCycle {
+  0% { color: #ffcc00; text-shadow: 2px 2px 0px #b84b35; }
+  33% { color: #ff4b4b; text-shadow: 2px 2px 0px #ffcc00; }
+  66% { color: #4bf2ff; text-shadow: 2px 2px 0px #ff4b4b; }
+  100% { color: #ffcc00; text-shadow: 2px 2px 0px #b84b35; }
+}
+
+/* Animación de texto flotante */
+.physics-popup-text {
+  position: absolute;
+  z-index: 20;
+  font: 700 0.75rem var(--mono);
+  pointer-events: none;
+  animation: floatUpAndFade 0.7s ease-out forwards;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+@keyframes floatUpAndFade {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -45px) scale(1.2);
+  }
+}
+
+/* --- Efecto de parpadeo y urgencia para el contador de puntos de rebote --- */
+@keyframes urgentBlink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.94);
+  }
+}
+
+.physics-score-counter.is-urgent .score-value {
+  color: var(--coral);
+  animation: urgentBlink 0.4s ease-in-out infinite;
+}
+
+.physics-score-counter.is-urgent .score-label {
+  color: var(--coral);
+}
+
+
+/* --- Efecto de tensión en los recuadros cuando se acaba el tiempo --- */
+@keyframes urgentBoxBlink {
+  0%, 100% {
+    border-color: var(--coral);
+    box-shadow: 0 0 15px rgba(255, 107, 74, 0.6);
+    filter: brightness(1.2);
+  }
+  50% {
+    border-color: rgba(247, 243, 236, 0.2);
+    box-shadow: 0 0 5px rgba(255, 107, 74, 0.1);
+    filter: brightness(0.8);
+  }
+}
+
+.is-urgent-warning .physics-item:not(.is-dragging):not(.star-bonus-item) {
+  animation: urgentBoxBlink 0.4s ease-in-out infinite;
+}
+
+/* --- Destello breve de impacto de la Estrella Arcade --- */
+.star-bonus-item {
+  transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.15s ease;
+  transform-origin: center center;
+}
+
+.star-bonus-item.star-hit-glow .star-inner {
+  filter: drop-shadow(0 0 25px #ffff00) brightness(1.6);
+  transform: scale(1.25);
+}
+/* --- Estilos específicos para la estrella bonus naranja --- */
+.star-bonus-item {
+  position: absolute;
+  width: 75px;
+  height: 75px;
+  display: none;
+  cursor: grab;
+  z-index: 5;
+  user-select: none;
+  touch-action: none;
+}
+
+.star-bonus-item:active {
+  cursor: grabbing;
+}
+
+/* --- Estilos para la estructura interna de la estrella y su transición de color/brillo --- */
+.star-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Transición suave para que el cambio de tamaño y color se sienta fluido y elástico */
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.25s ease;
+  transform-origin: center center;
+}
+
+/* Intensificación progresiva de amarillo y resplandor al recibir golpes */
+.star-bonus-item.hit-level-1 .star-inner {
+  filter: drop-shadow(0 0 12px #ffcc00) brightness(1.2) sepia(0.2) hue-rotate(-10deg);
+}
+
+.star-bonus-item.hit-level-2 .star-inner {
+  filter: drop-shadow(0 0 20px #ffcc00) brightness(1.4) sepia(0.5) hue-rotate(-15deg);
+}
+
+.star-bonus-item.hit-level-3 .star-inner {
+  filter: drop-shadow(0 0 28px #ffdd00) brightness(1.7) sepia(0.8) hue-rotate(-20deg);
+}
+
+.star-bonus-item.hit-level-4 .star-inner {
+  filter: drop-shadow(0 0 38px #ffee00) brightness(2.0) sepia(1) hue-rotate(-25deg);
+}
+
+.star-explosion-particle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #ffcc00;
+  border-radius: 50%;
+  box-shadow: 0 0 15px #ff9900;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: starExplode 0.6s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+  z-index: 25;
+}
+
+@keyframes starExplode {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2);
+  }
+}
+
+@keyframes starPulse {
+  0% {
+    filter: brightness(1);
+    box-shadow: 0 0 15px rgba(255, 107, 74, 0.4);
+  }
+  100% {
+    filter: brightness(1.3);
+    box-shadow: 0 0 30px rgba(255, 107, 74, 0.8);
+  }
+}
+
+/* ==========================================================================
+   MÓDULO MÓVIL: MODO ARCADE / MINIJUEGO DE FÍSICAS
+   ========================================================================== */
+
+.physics-item {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 2px solid rgba(247, 243, 236, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  cursor: grab;
+  pointer-events: auto;
+  user-select: none;
+  touch-action: none;
+  will-change: transform, filter;
+  transition: filter 0.1s ease;
+}
+
+.arcade-mode-btn {
+  display: none;
+  pointer-events: auto !important;
+  z-index: 50 !important;
+}
+
+.arcade-close-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 25;
+  background: var(--paper);
+  color: var(--ink);
+  border: 0;
+  padding: 8px 14px;
+  font: 600 0.61rem var(--mono);
+  text-transform: uppercase;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+
+.floating-physics-container.is-arcade-active {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100 !important;
+  background: rgba(11, 15, 20, 0.88) !important;
+  backdrop-filter: blur(8px);
+  pointer-events: auto !important;
+}
+
+.floating-physics-container.is-arcade-active .physics-item {
+  pointer-events: auto !important;
+}
+
+.physics-score-counter .score-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--coral);
+  font-family: var(--display);
+  line-height: 1;
+}
+
+/* Indicador de Multiplicador X2 en Amarillo */
+.physics-multiplier-badge {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffcc00;
+  background: rgba(255, 204, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 204, 0, 0.4);
+  letter-spacing: 0.05em;
+  display: none;
+}
+
+.physics-multiplier-badge.is-active {
+  display: inline-block;
+}
+
+.physics-multiplier-badge.is-blinking {
+  animation: multiplierBlink 0.4s infinite alternate;
+}
+
+@keyframes multiplierBlink {
+  0% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+
+.physics-popup-text {
+  position: absolute;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: popupFloat 0.7s ease-out forwards;
+  z-index: 20;
+}
+
+@keyframes popupFloat {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+  100% { opacity: 0; transform: translate(-50%, -50%) translateY(-35px) scale(1.1); }
+}
+
+@media (max-width: 800px) {
+  .hero-section {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 68px);
+  }
+
+  .hero-copy {
+    width: 100%;
+    min-height: 570px;
+    padding-top: 65px;
+  }
+
+  .physics-score-counter {
+    display: none !important;
+  }
+
+  .arcade-mode-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 50 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 8px 12px !important;
+    background: var(--coral) !important;
+    color: var(--ink) !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    font: 600 0.55rem var(--mono) !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(255, 107, 74, 0.4) !important;
+  }
+
+  .floating-physics-container.is-arcade-active .arcade-mode-btn {
+    display: none !important;
+  }
+
+  .floating-physics-container:not(.is-arcade-active) .physics-item {
+    display: none !important;
+  }
+
+  .floating-physics-container.is-arcade-active .physics-score-counter {
+    display: flex !important;
+  }
+}
+
+/* --- Botón de pausa original (arriba a la derecha, al lado del contador) --- */
+.physics-freeze-btn {
+  position: absolute;
+  top: 24px;
+  right: 180px; /* Ajusta este valor si deseas separarlo más o menos del contador de puntos */
+  z-index: 10;
+  pointer-events: auto;
+  background: rgba(17, 24, 32, 0.75);
+  color: var(--paper);
+  border: 1px solid rgba(247, 243, 236, 0.25);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font: 500 0.62rem var(--mono);
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+}
+
+.physics-freeze-btn:hover {
+  background: var(--coral);
+  color: var(--ink);
+  border-color: var(--coral);
+}
+
+.physics-freeze-btn.is-frozen {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--paper);
+}
+
+/* Transición suave al pasar a columna estática */
+.physics-item.is-static-column {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.2s ease !important;
+}
+
+@media (max-width: 800px) {
+  .physics-freeze-btn {
+    display: none !important; /* Oculto en móviles */
+  }
+}
+
+/* --- Hover contextual para tarjetas táctiles al pasar por el centro --- */
+@media (max-width: 800px) {
+  .skill-card.is-scroll-active {
+    border-color: var(--coral);
+    box-shadow:
+      0 5px 0 rgba(255, 107, 74, 0.12),
+      0 16px 30px rgba(17, 24, 32, 0.12);
+    transform: translateY(-4px);
+  }
+
+  .skill-card.is-scroll-active::before,
+  .award-card.is-scroll-active::before,
+  .document-card.is-scroll-active::before,
+  .experience-card.is-scroll-active::before,
+  .project-card.is-scroll-active::before {
+    width: 22px;
+    height: 22px;
+    opacity: 1;
+  }
+
+  .skill-card:not(.featured).is-scroll-active {
+    background: #ece8df;
+  }
+
+  .skill-card.featured.is-scroll-active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .projects-section .project-card.is-scroll-active {
+    border-color: rgba(247, 243, 236, 0.42);
+    background: #233442;
+    box-shadow: 0 22px 45px rgba(0, 0, 0, 0.28);
+    transform: translateY(-8px) rotate(-0.35deg);
+  }
+
+  .projects-section .project-card.is-scroll-active::before {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  .projects-section .project-card.is-scroll-active .project-visual {
+    filter: saturate(1.12) brightness(1.08);
+    transform: scale(1.025);
+  }
+
+  .projects-section .project-card.is-scroll-active .project-content > p:not(.project-type) {
+    opacity: 0.86;
+  }
+
+  .projects-section .project-card.is-scroll-active .project-content h3 {
+    transform: translateX(4px);
+  }
+
+  .projects-section .project-card.is-scroll-active .project-link {
+    color: var(--paper);
+    transform: translateX(5px);
+  }
+
+  .document-card.is-scroll-active {
+    border-color: var(--coral);
+    background: #111820;
+    box-shadow: 8px 8px 0 rgba(255, 107, 74, 0.11);
+    transform: translate(-3px, -4px);
+  }
+
+  .document-card.is-scroll-active .document-card-visual::after {
+    opacity: 0.62;
+  }
+
+  .document-card.is-scroll-active .document-card-visual img {
+    filter: saturate(1.18);
+    transform: scale(1.07) rotate(1deg);
+  }
+
+  .award-card.is-scroll-active {
+    border-color: var(--coral);
+    box-shadow:
+      0 25px 50px rgba(0, 0, 0, 0.4),
+      0 0 25px rgba(255, 107, 74, 0.2);
+    transform: translateY(-3px);
+  }
+
+  .award-card.is-scroll-active img {
+    transform: translateZ(25px) scale(1.03);
+  }
+
+  .experience-card.is-scroll-active {
+    border-color: var(--coral);
+    box-shadow: 0 20px 40px rgba(17, 24, 32, 0.25), 0 0 20px rgba(255, 107, 74, 0.15);
+    transform: translateY(-6px);
+  }
+
+  .experience-card.is-scroll-active .experience-card-image img {
+    transform: scale(1.02);
+  }
+
+  .experience-card.is-scroll-active .experience-open-link {
+    transform: translateX(4px);
+    color: var(--lime);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-card.is-scroll-active,
+  .projects-section .project-card.is-scroll-active,
+  .document-card.is-scroll-active,
+  .award-card.is-scroll-active,
+  .experience-card.is-scroll-active {
+    transform: none;
+  }
+}
+
+/* Estilo base del récord dorado brillante */
+#high-score-display {
+  color: #ffcc00;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(255, 204, 0, 0.6);
+  transition: transform 0.3s ease, color 0.3s ease;
+  display: inline-block;
+}
+
+/* Animación de pulso continuo / bucle */
+@keyframes recordPulseLoop {
+  0%, 100% { transform: scale(1); filter: brightness(1); text-shadow: 0 0 8px rgba(255, 204, 0, 0.6); }
+  50% { transform: scale(1.15); filter: brightness(1.4); text-shadow: 0 0 16px rgba(255, 204, 0, 0.9); }
+}
+
+.is-record-glowing-loop {
+  animation: recordPulseLoop 1.5s ease-in-out infinite;
+}
+
+/* Parpadeo amarillo de tensión antes de desaparecer */
+@keyframes starYellowBlink {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px #ffcc00) brightness(1.3);
+  }
+  50% {
+    opacity: 0.2;
+    filter: drop-shadow(0 0 3px #ffcc00) brightness(0.6);
+  }
+}
+
+.star-bonus-item.is-disappearing {
+  animation: starYellowBlink 0.25s ease-in-out infinite !important;
+}
+
+/* --- Estela de polvo de hada blanco brillante y centrada --- */
+.fairy-dust-particle {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ffffff, 0 0 16px #ffcc00, 0 0 4px #ffffff;
+  pointer-events: none;
+  animation: fadeOutTrail 0.6s forwards cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 25;
+}
+
+@keyframes fadeOutTrail {
+  0% {
+    transform: translate(-50%, -50%) translate(0px, 0px) scale(1.6);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* --- Halo resplandeciente de la sección durante el Multiplicador x2 --- */
+#floating-physics-container.is-multiplier-active {
+  box-shadow: inset 0 0 35px rgba(255, 204, 0, 0.45), 0 0 25px rgba(255, 204, 0, 0.3) !important;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Parpadeo suave del borde en los últimos segundos del multiplicador */
+@keyframes borderYellowBlink {
+  0%, 100% {
+    box-shadow: inset 0 0 35px rgba(255, 204, 0, 0.5), 0 0 25px rgba(255, 204, 0, 0.35);
+  }
+  50% {
+    box-shadow: inset 0 0 8px rgba(255, 204, 0, 0.15), 0 0 5px rgba(255, 204, 0, 0.08);
+  }
+}
+
+#floating-physics-container.is-multiplier-active.is-multiplier-ending {
+  animation: borderYellowBlink 0.4s ease-in-out infinite !important;
+}
+
+/* --- Efecto Shake para la pantalla completa --- */
+@keyframes containerScreenShake {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(calc(var(--shake-x, 4px) * -1), var(--shake-y, 3px)); }
+  40% { transform: translate(var(--shake-x, 4px), calc(var(--shake-y, 3px) * -1)); }
+  60% { transform: translate(calc(var(--shake-x, 4px) * 0.5), var(--shake-y, 3px)); }
+  80% { transform: translate(calc(var(--shake-x, 4px) * -0.5), calc(var(--shake-y, 3px) * -0.5)); }
+  100% { transform: translate(0, 0); }
+}
+
+#floating-physics-container.is-shaking {
+  animation: containerScreenShake 0.18s ease-out !important;
 }
