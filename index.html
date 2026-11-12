@@ -1,11 +1,8 @@
 <!doctype html>
-<!--
-  Esta es la página principal del portfolio. Mantengo aquí la estructura
-  semántica y dejo el contenido repetitivo para script.js.
--->
+
 <html lang="es">
   <head>
-    <!-- Metadatos del sitio y conexión con la hoja de estilos. -->
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
@@ -13,15 +10,16 @@
       content="Portfolio de Pablo Menéndez-Morán, diseñador y desarrollador de videojuegos."
     />
     <title>Pablo · Game Design / Dev</title>
-    <!-- Favicon: reemplaza "data:," por la ruta del icono que elijas. -->
+
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="site-shell">
+      <!-- ESTRUCTURA GLOBAL: indicador de lectura y contenedor del sitio. -->
+    <div class="site-shell" id="top">
       <div class="scroll-progress" aria-hidden="true"></div>
 
-      <!-- Cabecera compartida con marca, selección de idioma y navegación. -->
+      <!-- CABECERA: marca, selector de idioma y navegación adaptable. -->
       <header class="topbar">
         <a class="brand" href="#top" aria-label="Ir al inicio">
           <span class="brand-character-mask">
@@ -66,23 +64,22 @@
         </nav>
       </header>
 
-      <main id="top">
-        <!-- Portada: presentación, propuesta profesional y acceso a proyectos. -->
+      <main>
+
+        <!-- PORTADA: interacción física, presentación y llamada a proyectos. -->
         <section class="hero-section">
           <div class="floating-physics-container" id="floating-physics-container">
-            <!-- Botón sutil de congelar / accesibilidad -->
+
             <button type="button" class="physics-freeze-btn" id="physics-freeze-btn" aria-label="Pausar movimiento de recuadros">
               ⏸️ Congelar física
             </button>
-            <!-- Botón de juego móvil (arriba a la derecha) -->
+
             <button type="button" class="arcade-mode-btn" id="arcade-toggle-btn">
               🕹️ Jugar con físicas
             </button>
 
-            <!-- Botón para cerrar el modo juego -->
             <button type="button" class="arcade-close-btn" id="arcade-close-btn" hidden>✕ Salir</button>
 
-            <!-- Contador flotante de combos/puntos de física -->
             <div class="physics-score-counter" id="physics-score-counter">
               <span class="score-label">Puntos de Rebote</span>
               <span class="score-value" id="score-display">0</span>
@@ -120,7 +117,7 @@
 
         </section>
 
-        <!-- Perfil: presentación personal, estadísticas y método de trabajo. -->
+        <!-- PERFIL: biografía, estadísticas y método de trabajo. -->
         <section class="section about-section" id="about">
           <div class="section-heading">
             <div>
@@ -166,7 +163,7 @@
           </div>
         </section>
 
-        <!-- Habilidades: categorías y herramientas generadas desde JavaScript. -->
+        <!-- HABILIDADES: el contenido de tarjetas se genera desde script.js. -->
         <section class="section skills-section" id="skills">
           <div class="section-heading">
             <div>
@@ -183,7 +180,7 @@
           <div class="skills-list" id="skills-list"></div>
         </section>
 
-        <!-- Proyectos: tarjetas y fichas de estudio generadas desde los datos. -->
+        <!-- PROYECTOS: tarjetas enlazadas a fichas individuales. -->
         <section class="section projects-section" id="projects">
           <div class="section-heading">
             <div>
@@ -199,7 +196,7 @@
           <div class="projects-list" id="projects-list"></div>
         </section>
 
-        <!-- Investigación: biblioteca de documentos con filtros por categoría. -->
+        <!-- INVESTIGACIÓN: documentos, filtros y contador del archivo. -->
         <section
           class="section documents-section archive-section"
           id="documents"
@@ -275,7 +272,7 @@
           <div class="documents-grid" id="documents-grid"></div>
         </section>
 
-        <!-- Reconocimientos: tarjetas y referencias externas generadas por JavaScript. -->
+        <!-- RECONOCIMIENTOS: tarjetas dinámicas y detalle modal. -->
         <section class="section awards-section" id="awards">
           <div class="section-heading">
             <div>
@@ -291,7 +288,7 @@
           <div class="awards-grid" id="awards-grid"></div>
         </section>
 
-        <!-- Experiencia: formación y trayectoria presentadas como recorrido. -->
+        <!-- EXPERIENCIA: recorrido cronológico renderizado por JavaScript. -->
         <section class="section experience-section" id="experience">
           <div class="section-heading">
             <div>
@@ -307,7 +304,7 @@
           <div class="experience-list" id="experience-list"></div>
         </section>
 
-        <!-- Contacto: correo y enlaces profesionales. -->
+        <!-- CONTACTO: correo y enlaces profesionales. -->
         <section class="contact-section" id="contact">
           <div class="contact-inner">
             <p class="eyebrow">Contacto</p>
@@ -332,7 +329,7 @@
         </section>
       </main>
 
-      <!-- Pie de página y enlace para regresar al inicio. -->
+      <!-- PIE DE PÁGINA: créditos y retorno al inicio. -->
       <footer class="footer">
         <span>© 2026 Pablo Menéndez-Morán</span
         ><span
@@ -340,7 +337,7 @@
         ><a href="#top">Volver arriba ↑</a>
       </footer>
 
-      <!-- Ventana modal reutilizable para el contenido interactivo. -->
+      <!-- MODAL COMPARTIDO: contenedor de diálogos interactivos. -->
       <div class="modal-backdrop" id="modal-backdrop" hidden>
         <section
           class="portfolio-modal"
@@ -361,7 +358,7 @@
       </div>
     </div>
 
-    <!-- Lógica de renderizado, idioma, navegación, filtros y ventanas modales. -->
-      <script src="script.js"></script>
+      <!-- Comportamiento común: renderizado, idioma y controles. -->
+    <script src="script.js"></script>
   </body>
 </html>

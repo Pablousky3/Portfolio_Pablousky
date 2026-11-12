@@ -1,13 +1,8 @@
-/* ==========================================================================
-   1. BASE, TIPOGRAFÍA Y CABECERA
-   ==========================================================================
-   En este archivo concentro toda la identidad visual del portfolio.
-   Organizo las reglas por componentes y dejo las reglas responsive junto a
-   los componentes que modifican para que sea más fácil mantenerlas.
-   ========================================================================== */
-/* Fuentes tipográficas que definen la jerarquía editorial del sitio. */
+
+
+/* 01. BASE: fuentes, tokens de color y normalización global. */
 @import url(https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap);
-/* Paleta, tipografías y tokens compartidos para mantener coherencia visual. */
+
 :root {
   font-family: "DM Sans", sans-serif;
   color: #f7f3ec;
@@ -24,7 +19,7 @@
   --display: "Space Grotesk", sans-serif;
   --mono: "IBM Plex Mono", monospace;
 }
-/* Normalización del modelo de caja y comportamiento base de controles. */
+
 * {
   box-sizing: border-box;
 }
@@ -49,7 +44,8 @@ button {
 .site-shell {
   overflow: hidden;
 }
-/* Cabecera fija, marca, navegación y adaptación del menú móvil. */
+
+/* 02. CABECERA: marca, navegación y selector de idioma. */
 .brand,
 .topbar {
   display: flex;
@@ -129,7 +125,8 @@ button {
   border: 0;
   padding: 7px;
 }
-/* Portada: composición, imagen de fondo, titular y llamada a proyectos. */
+
+/* 03. PORTADA: composición, titular, fondo y llamada a la acción. */
 .hero-section {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -210,7 +207,7 @@ h2 em {
     linear-gradient(90deg, var(--ink) -3%, transparent 38%),
     linear-gradient(0deg, rgba(17, 24, 32, 0.5), transparent 50%);
 }
-/* Espaciado y jerarquía tipográfica común a las secciones principales. */
+
 .section {
   padding: clamp(76px, 10vw, 140px) 5vw;
 }
@@ -233,7 +230,8 @@ h2 em {
   line-height: 1.7;
   margin: 0;
 }
-/* Presentación personal, retrato y panel de estadísticas. */
+
+/* 04. PERFIL: biografía, retrato y estadísticas. */
 .about-section {
   background: var(--soft);
 }
@@ -257,7 +255,8 @@ h2 em {
   margin: 0;
   line-height: 1.6;
 }
-/* Tarjetas de habilidades, subhabilidades e iconos de herramientas. */
+
+/* 05. HABILIDADES: categorías, tarjetas e iconos de herramientas. */
 .skills-section {
   background: var(--paper);
   color: var(--ink);
@@ -305,7 +304,8 @@ h2 em {
   color: #b84b35 !important;
   margin: 0 0 12px !important;
 }
-/* Portafolio de proyectos, estados, medios y enlaces a casos de estudio. */
+
+/* 06. PROYECTOS: tarjetas, medios, estados y enlaces. */
 .projects-section {
   background: var(--ink);
 }
@@ -392,9 +392,8 @@ h2 em {
   font: 600 0.64rem var(--mono);
   text-transform: uppercase;
 }
-/* Formación y experiencia en formato cronológico y adaptable. */
 
-/* Llamada de contacto, enlaces profesionales y cierre visual. */
+/* 07. CONTACTO: llamada final y enlaces profesionales. */
 .contact-section {
   background: var(--coral);
   color: var(--ink);
@@ -452,7 +451,8 @@ h2 em {
   font-weight: 400;
   opacity: 0.65;
 }
-/* Pie compartido con crédito y navegación de retorno. */
+
+/* 08. PIE DE PÁGINA: créditos y navegación de retorno. */
 .footer {
   padding: 22px 5vw;
   display: flex;
@@ -465,7 +465,8 @@ h2 em {
   color: var(--coral);
   gap: 5px;
 }
-/* Ventana modal reutilizable para habilidades, documentos y premios. */
+
+/* 09. MODALES: fondo, ventana, contenido y controles. */
 .modal-backdrop[hidden] {
   display: none !important;
 }
@@ -565,7 +566,7 @@ h2 em {
     align-self: flex-start;
   }
 }
-/* Preferencias de accesibilidad: limita animación y movimiento. */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   :after,
@@ -584,7 +585,7 @@ section[id] {
 .skill-card:hover {
   border-color: var(--coral);
 }
-/* Vitrina de reconocimientos y sus estados interactivos. */
+
 .awards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -929,7 +930,6 @@ section[id] {
   }
 }
 
-
 .award-card-copy {
   position: relative;
   min-height: 170px;
@@ -1084,7 +1084,8 @@ section[id] {
 .tool-icon:hover img {
   transform: scale(1.08);
 }
-/* Indicador fijo del progreso de lectura de la página. */
+
+/* 10. UTILIDADES GLOBALES: progreso de lectura y lenguaje. */
 .scroll-progress {
   position: fixed;
   top: 0;
@@ -1223,7 +1224,8 @@ section[id] {
   color: inherit;
   text-decoration: none;
 }
-/* Plantilla visual para las fichas de proyecto en página independiente. */
+
+/* 11. FICHA DE PROYECTO: plantilla, portada, galería y contenido. */
 .project-page {
   min-height: calc(100vh - 78px);
   background: var(--paper);
@@ -1361,10 +1363,7 @@ section[id] {
     margin: -25px -25px 25px;
   }
 }
-@media (max-width: 520px) {
-}
-@media (max-width: 800px) {
-}
+
 .portfolio-modal .modal-close {
   z-index: 2;
   display: grid;
@@ -1391,12 +1390,7 @@ section[id] {
 .projects-section .project-card:hover .project-content h3 {
   transform: translateX(4px);
 }
-@media (max-width: 800px) {
-}
-@media (max-width: 800px) {
-}
-@media (max-width: 800px) {
-}
+
 :root {
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   --motion-hover: 420ms;
@@ -1411,7 +1405,8 @@ section[id] {
 .skill-card.featured h3 {
   color: var(--paper);
 }
-/* Biblioteca de documentos, metadatos, filtros y tarjetas de archivo. */
+
+/* 12. DOCUMENTACIÓN: archivo, filtros y tarjetas. */
 .documents-section {
   position: relative;
   overflow: hidden;
@@ -1718,10 +1713,7 @@ section[id] {
   outline: 2px solid var(--lime);
   outline-offset: 4px;
 }
-@media (max-width: 800px) {
-}
-@media (prefers-reduced-motion: reduce) {
-}
+
 .projects-section {
   position: relative;
   isolation: isolate;
@@ -2550,7 +2542,8 @@ section[id] {
 .project-case::after {
   content: "";
   position: absolute;
-  inset: 12%0 auto auto;
+  /* Declaración inactiva: sintaxis inválida (12%0); no participa en el diseño. */
+  /* inset: 12%0 auto auto; */
   width: min(45vw, 620px);
   height: 520px;
   pointer-events: none;
@@ -2655,7 +2648,7 @@ section[id] {
   width: min(1180px, 100%);
   margin: 0 auto;
 }
-/* Portada del caso de estudio con rol, herramientas y contenido multimedia. */
+
 .project-study-hero {
   max-width: 1180px;
   margin-top: clamp(42px, 7vw, 90px);
@@ -3084,7 +3077,7 @@ section[id] {
     filter: none;
   }
 }
-/* Acceso flotante opcional al sitio externo de cada videojuego. */
+
 .project-floating-game-link {
   position: fixed;
   right: clamp(18px, 3vw, 42px);
@@ -3673,7 +3666,6 @@ html {
   transform: translateZ(25px);
 }
 
-/* --- Contenedor general de la sección de reconocimientos --- */
 .awards-section {
   perspective: 1200px;
 }
@@ -3685,7 +3677,6 @@ html {
   perspective: 1200px;
 }
 
-/* --- Estilo de carta 3D para Reconocimientos --- */
 .award-card {
   position: relative;
   border: 1px solid rgba(247, 243, 236, 0.15);
@@ -3697,8 +3688,7 @@ html {
   flex-direction: column;
   cursor: pointer;
   overflow: hidden;
-  
-  /* Propiedades clave para el efecto 3D */
+
   transform-style: preserve-3d;
   will-change: transform;
   transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
@@ -3706,15 +3696,13 @@ html {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
-/* Efecto de brillo/luz dinámico opcional en hover */
 .award-card:hover {
   border-color: var(--coral);
-  box-shadow: 
+  box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.4),
     0 0 25px rgba(255, 107, 74, 0.2);
 }
 
-/* Profundidad en los elementos internos de la tarjeta */
 .award-card img {
   width: 100%;
   aspect-ratio: 3/2;
@@ -3765,10 +3753,7 @@ html {
   transform: translateZ(20px);
 }
 
-/* ==========================================================================
-   SECCIÓN DE EXPERIENCIA & TIMELINE INTERACTIVA
-   ========================================================================== */
-
+/* 13. EXPERIENCIA: línea de tiempo, tarjetas y adaptación móvil. */
 .experience-section {
   position: relative;
   isolation: isolate;
@@ -3781,7 +3766,6 @@ html {
   color: var(--ink);
 }
 
-/* Contenedor principal de la timeline */
 .experience-list {
   --timeline-axis-x: 50%;
   --timeline-progress: 0%;
@@ -3791,7 +3775,6 @@ html {
   padding: 20px 0;
 }
 
-/* Línea vertical central animada */
 .experience-list::before {
   content: "";
   position: absolute;
@@ -3837,7 +3820,6 @@ html {
   z-index: 2;
 }
 
-/* Wrapper de cada elemento de la timeline */
 .experience-card-wrapper {
   position: relative;
   display: flex;
@@ -3846,7 +3828,7 @@ html {
   width: 100%;
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), 
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -3866,14 +3848,13 @@ html {
   }
 }
 
-/* --- TARJETAS DE EXPERIENCIA (ESTILO CONTENIDO & SIN DESBORDAMIENTOS) --- */
 .experience-card {
   width: calc(50% - 40px);
   background: var(--ink);
   color: var(--paper);
   border-radius: 16px;
   border: 1px solid rgba(247, 243, 236, 0.12);
-  overflow: hidden; /* Garantiza que ningún elemento interno se salga de los bordes redondeados */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   text-align: left;
@@ -3892,7 +3873,6 @@ html {
   outline: none;
 }
 
-/* Marco de imagen uniforme: conserva completos los diplomas y las fotografías. */
 .experience-card-image {
   display: grid;
   place-items: center;
@@ -3917,7 +3897,6 @@ html {
   transform: scale(1.02);
 }
 
-/* Cuerpo de la tarjeta */
 .experience-card-body {
   padding: 24px;
   display: flex;
@@ -3940,7 +3919,7 @@ html {
   line-height: 1.25;
   color: var(--paper);
   margin: 0 0 8px 0;
-  word-break: break-word; /* Evita que títulos largos rompan el diseño */
+  word-break: break-word;
 }
 
 .experience-card-org {
@@ -3951,7 +3930,6 @@ html {
   margin-bottom: 20px;
 }
 
-/* Pie de tarjeta */
 .experience-card-footer {
   margin-top: auto;
   padding-top: 14px;
@@ -3978,7 +3956,6 @@ html {
   color: var(--lime);
 }
 
-/* --- ADAPTABILIDAD RESPONSIVA (MÓVILES Y TABLETS) --- */
 @media (max-width: 800px) {
   .experience-list {
     --timeline-axis-x: 20px;
@@ -4011,8 +3988,6 @@ html {
   }
 }
 
-
-/* --- Lenguaje visual videojuego: retículas suaves y paneles tipo HUD --- */
 :root {
   --game-grid-dark: rgba(184, 217, 107, 0.035);
   --game-grid-light: rgba(17, 24, 32, 0.045);
@@ -4086,7 +4061,6 @@ html {
   background: rgba(17, 24, 32, 0.08);
 }
 
-/* Esquinas técnicas: pequeños indicadores de panel, sin tapar el contenido. */
 .document-card,
 .experience-card {
   position: relative;
@@ -4187,7 +4161,6 @@ html {
   }
 }
 
-/* --- Tarjetas de reconocimientos: lectura cómoda en pantallas pequeñas --- */
 @media (max-width: 800px) {
   .awards-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4220,13 +4193,12 @@ html {
   }
 }
 
-
-/* --- Estilos para los elementos flotantes interactivos de la portada --- */
+/* 14. MINIJUEGO: contenedor flotante y elementos físicos. */
 .floating-physics-container {
   position: absolute;
   inset: 0;
   z-index: 3;
-  pointer-events: none; /* Permite hacer clic en los elementos de debajo, los hijos activan sus eventos */
+  pointer-events: none;
   overflow: hidden;
 }
 
@@ -4267,8 +4239,7 @@ html {
   }
 }
 
-
-/* --- Contenedor de la puntuación y récord original (arriba a la derecha) --- */
+/* 15. MINIJUEGO: puntuación, récord, efectos y accesibilidad. */
 .physics-score-counter {
   position: absolute;
   top: 24px;
@@ -4277,7 +4248,7 @@ html {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  pointer-events: none; /* Bloquea clics en el contenedor global, pero se habilita en el récord mediante JS */
+  pointer-events: none;
   font-family: var(--mono);
   user-select: none;
 }
@@ -4303,7 +4274,6 @@ html {
   color: var(--lime);
 }
 
-/* --- Cartel de nuevo récord con efectos Arcade Retro avanzados --- */
 .physics-center-banner {
   position: absolute;
   top: 50%;
@@ -4322,7 +4292,6 @@ html {
   animation: arcadeBannerPop 1.6s steps(12, end) forwards, arcadeShake 0.2s ease-in-out infinite;
 }
 
-/* Efecto de líneas de escaneo estilo pantalla CRT antigua */
 .physics-center-banner::before {
   content: "";
   position: absolute;
@@ -4340,7 +4309,7 @@ html {
   margin: 0;
   font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   color: #ffcc00;
-  text-shadow: 2px 2px 0px #b84b35, -2px -2px 0px #357db8; /* Efecto cromático arcade */
+  text-shadow: 2px 2px 0px #b84b35, -2px -2px 0px #357db8;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   animation: arcadeColorCycle 0.8s steps(4, end) infinite;
@@ -4357,7 +4326,6 @@ html {
   text-shadow: 1px 1px 0px #000;
 }
 
-/* Animación de entrada y salida */
 @keyframes arcadeBannerPop {
   0% {
     opacity: 0;
@@ -4380,7 +4348,6 @@ html {
   }
 }
 
-/* Pequeño temblequeo de vibración arcade */
 @keyframes arcadeShake {
   0% { transform: translate(-50%, -50%) translate(0, 0); }
   25% { transform: translate(-50%, -50%) translate(-1px, 1px); }
@@ -4389,7 +4356,6 @@ html {
   100% { transform: translate(-50%, -50%) translate(0, 0); }
 }
 
-/* Ciclo de parpadeo de colores neón retro */
 @keyframes arcadeColorCycle {
   0% { color: #ffcc00; text-shadow: 2px 2px 0px #b84b35; }
   33% { color: #ff4b4b; text-shadow: 2px 2px 0px #ffcc00; }
@@ -4397,7 +4363,6 @@ html {
   100% { color: #ffcc00; text-shadow: 2px 2px 0px #b84b35; }
 }
 
-/* Animación de texto flotante */
 .physics-popup-text {
   position: absolute;
   z-index: 20;
@@ -4418,7 +4383,6 @@ html {
   }
 }
 
-/* --- Efecto de parpadeo y urgencia para el contador de puntos de rebote --- */
 @keyframes urgentBlink {
   0%, 100% {
     opacity: 1;
@@ -4439,8 +4403,6 @@ html {
   color: var(--coral);
 }
 
-
-/* --- Efecto de tensión en los recuadros cuando se acaba el tiempo --- */
 @keyframes urgentBoxBlink {
   0%, 100% {
     border-color: var(--coral);
@@ -4458,7 +4420,6 @@ html {
   animation: urgentBoxBlink 0.4s ease-in-out infinite;
 }
 
-/* --- Destello breve de impacto de la Estrella Arcade --- */
 .star-bonus-item {
   transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.15s ease;
   transform-origin: center center;
@@ -4468,7 +4429,7 @@ html {
   filter: drop-shadow(0 0 25px #ffff00) brightness(1.6);
   transform: scale(1.25);
 }
-/* --- Estilos específicos para la estrella bonus naranja --- */
+
 .star-bonus-item {
   position: absolute;
   width: 75px;
@@ -4484,19 +4445,17 @@ html {
   cursor: grabbing;
 }
 
-/* --- Estilos para la estructura interna de la estrella y su transición de color/brillo --- */
 .star-inner {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Transición suave para que el cambio de tamaño y color se sienta fluido y elástico */
+
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.25s ease;
   transform-origin: center center;
 }
 
-/* Intensificación progresiva de amarillo y resplandor al recibir golpes */
 .star-bonus-item.hit-level-1 .star-inner {
   filter: drop-shadow(0 0 12px #ffcc00) brightness(1.2) sepia(0.2) hue-rotate(-10deg);
 }
@@ -4547,10 +4506,6 @@ html {
     box-shadow: 0 0 30px rgba(255, 107, 74, 0.8);
   }
 }
-
-/* ==========================================================================
-   MÓDULO MÓVIL: MODO ARCADE / MINIJUEGO DE FÍSICAS
-   ========================================================================== */
 
 .physics-item {
   position: absolute;
@@ -4611,7 +4566,6 @@ html {
   line-height: 1;
 }
 
-/* Indicador de Multiplicador X2 en Amarillo */
 .physics-multiplier-badge {
   margin-top: 4px;
   font-size: 0.75rem;
@@ -4709,11 +4663,10 @@ html {
   }
 }
 
-/* --- Botón de pausa original (arriba a la derecha, al lado del contador) --- */
 .physics-freeze-btn {
   position: absolute;
   top: 24px;
-  right: 180px; /* Ajusta este valor si deseas separarlo más o menos del contador de puntos */
+  right: 180px;
   z-index: 10;
   pointer-events: auto;
   background: rgba(17, 24, 32, 0.75);
@@ -4740,18 +4693,16 @@ html {
   border-color: var(--paper);
 }
 
-/* Transición suave al pasar a columna estática */
 .physics-item.is-static-column {
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.2s ease !important;
 }
 
 @media (max-width: 800px) {
   .physics-freeze-btn {
-    display: none !important; /* Oculto en móviles */
+    display: none !important;
   }
 }
 
-/* --- Hover contextual para tarjetas táctiles al pasar por el centro --- */
 @media (max-width: 800px) {
   .skill-card.is-scroll-active {
     border-color: var(--coral);
@@ -4864,7 +4815,6 @@ html {
   }
 }
 
-/* Estilo base del récord dorado brillante */
 #high-score-display {
   color: #ffcc00;
   font-weight: bold;
@@ -4873,7 +4823,6 @@ html {
   display: inline-block;
 }
 
-/* Animación de pulso continuo / bucle */
 @keyframes recordPulseLoop {
   0%, 100% { transform: scale(1); filter: brightness(1); text-shadow: 0 0 8px rgba(255, 204, 0, 0.6); }
   50% { transform: scale(1.15); filter: brightness(1.4); text-shadow: 0 0 16px rgba(255, 204, 0, 0.9); }
@@ -4883,7 +4832,6 @@ html {
   animation: recordPulseLoop 1.5s ease-in-out infinite;
 }
 
-/* Parpadeo amarillo de tensión antes de desaparecer */
 @keyframes starYellowBlink {
   0%, 100% {
     opacity: 1;
@@ -4899,7 +4847,6 @@ html {
   animation: starYellowBlink 0.25s ease-in-out infinite !important;
 }
 
-/* --- Estela de polvo de hada blanco brillante y centrada --- */
 .fairy-dust-particle {
   position: absolute;
   width: 9px;
@@ -4923,13 +4870,11 @@ html {
   }
 }
 
-/* --- Halo resplandeciente de la sección durante el Multiplicador x2 --- */
 #floating-physics-container.is-multiplier-active {
   box-shadow: inset 0 0 35px rgba(255, 204, 0, 0.45), 0 0 25px rgba(255, 204, 0, 0.3) !important;
   transition: box-shadow 0.3s ease;
 }
 
-/* Parpadeo suave del borde en los últimos segundos del multiplicador */
 @keyframes borderYellowBlink {
   0%, 100% {
     box-shadow: inset 0 0 35px rgba(255, 204, 0, 0.5), 0 0 25px rgba(255, 204, 0, 0.35);
@@ -4943,7 +4888,6 @@ html {
   animation: borderYellowBlink 0.4s ease-in-out infinite !important;
 }
 
-/* --- Efecto Shake para la pantalla completa --- */
 @keyframes containerScreenShake {
   0% { transform: translate(0, 0); }
   20% { transform: translate(calc(var(--shake-x, 4px) * -1), var(--shake-y, 3px)); }
@@ -4955,4 +4899,143 @@ html {
 
 #floating-physics-container.is-shaking {
   animation: containerScreenShake 0.18s ease-out !important;
+}
+
+/* MODAL: contiene el desplazamiento dentro de la ventana, también en móvil. */
+.modal-backdrop {
+  overscroll-behavior: none;
+}
+
+.portfolio-modal {
+  max-height: min(90vh, 90svh);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* PORTADA: ocupa el espacio visible que queda bajo la cabecera fija. */
+.hero-section {
+  height: calc(100vh - 78px);
+  height: calc(100svh - 78px);
+  min-height: 0;
+}
+
+.hero-copy {
+  height: 100%;
+  min-height: 0;
+  padding-top: clamp(20px, 6svh, 70px);
+  padding-bottom: clamp(20px, 6svh, 70px);
+}
+
+.hero-copy h1 {
+  font-size: clamp(2.2rem, min(7.2vw, 9.5svh), 6rem);
+  margin-bottom: clamp(10px, 2.8svh, 26px);
+}
+
+.hero-copy .eyebrow {
+  margin-bottom: clamp(8px, 1.8svh, 18px);
+}
+
+.hero-lede {
+  font-size: clamp(0.88rem, min(1.1vw, 1.8svh), 1.03rem);
+  line-height: 1.55;
+  margin-bottom: clamp(12px, 2.8svh, 26px);
+}
+
+.hero-scroll-cue {
+  margin-top: clamp(12px, 2.3svh, 22px);
+}
+
+@media (max-width: 800px) {
+  .hero-section {
+    height: calc(100vh - 68px);
+    height: calc(100svh - 68px);
+    min-height: 0;
+  }
+
+  .hero-copy {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: clamp(66px, 11svh, 82px) 6vw clamp(18px, 4svh, 32px);
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2rem, min(8.2vw, 8.5svh), 4.4rem);
+  }
+
+  .hero-lede {
+    max-width: 42ch;
+    font-size: clamp(0.88rem, 2.2svh, 1rem);
+  }
+}
+
+/* En ventanas muy bajas se reduce la tipografía y se prioriza el contenido. */
+@media (max-width: 800px) and (max-height: 500px) {
+  .hero-copy {
+    padding-top: 62px;
+    padding-bottom: 12px;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(1.75rem, 7.5vw, 2.5rem);
+    margin-bottom: 10px;
+  }
+
+  .hero-copy .eyebrow {
+    margin-bottom: 8px;
+  }
+
+  .hero-lede {
+    font-size: 0.84rem;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+
+  .hero-scroll-cue {
+    display: none;
+  }
+}
+
+/* HERRAMIENTAS: fuerza el fondo naranja también en las tarjetas destacadas. */
+.skill-card.featured .tool-icon:focus-visible,
+.skill-card.featured .tool-icon:hover {
+  border-color: var(--coral);
+  color: var(--ink);
+  background: var(--coral);
+}
+
+/* HABILIDADES DESTACADAS: hover más visible en diseño e inteligencia artificial. */
+.skills-section .skill-card.featured .skill-image {
+  transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skills-section .skill-card.featured:hover,
+.skills-section .skill-card.featured:focus-within,
+.skills-section .skill-card.featured.is-scroll-active {
+  z-index: 2;
+  border-color: var(--coral);
+  box-shadow:
+    0 8px 0 rgba(255, 107, 74, 0.2),
+    0 26px 54px rgba(17, 24, 32, 0.3),
+    0 0 30px rgba(255, 107, 74, 0.16);
+  transform: translateY(-8px) scale(1.012);
+}
+
+.skills-section .skill-card.featured:hover .skill-image,
+.skills-section .skill-card.featured:focus-within .skill-image,
+.skills-section .skill-card.featured.is-scroll-active .skill-image {
+  transform: scale(1.045);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-section .skill-card.featured:hover,
+  .skills-section .skill-card.featured:focus-within,
+  .skills-section .skill-card.featured.is-scroll-active,
+  .skills-section .skill-card.featured:hover .skill-image,
+  .skills-section .skill-card.featured:focus-within .skill-image,
+  .skills-section .skill-card.featured.is-scroll-active .skill-image {
+    transform: none;
+    transition: none;
+  }
 }

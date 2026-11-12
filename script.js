@@ -1,11 +1,6 @@
-/* ==========================================================================
-   1. INICIALIZACIÓN Y UTILIDADES
-   ==========================================================================
-   Aquí preparo la página, detecto qué plantilla se está mostrando y conecto
-   las interacciones comunes. Mantengo esta parte pequeña para que el resto
-   del archivo se limite a datos, renderizado y comportamiento visual.
-   ========================================================================== */
-// Inicializa las dos páginas y registra sus interacciones cuando el DOM está listo.
+
+
+// 01. INICIO: decide qué vista montar y conecta controles comunes.
 document.addEventListener("DOMContentLoaded", () => {
   const isProjectPage = document.body.dataset.page === "project";
   if (isProjectPage) {
@@ -38,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Alterna el retrato estático y animado al pasar el puntero por la marca.
+// 02. MARCA: alterna la imagen estática y animada del personaje.
 const character = document.querySelector(".brand-character");
 
 if (character) {
@@ -52,7 +47,7 @@ if (character) {
   });
 }
 
-// Normaliza listas opcionales y centraliza el registro de eventos por selector.
+// 03. UTILIDADES: normalización de listas y registro de eventos.
 const arr = (value) => (Array.isArray(value) ? value : []);
 
 const onAll = (selector, event, callback, root = document) =>
@@ -60,13 +55,7 @@ const onAll = (selector, event, callback, root = document) =>
     .querySelectorAll(selector)
     .forEach((element) => element.addEventListener(event, callback));
 
-/* ==========================================================================
-   2. DATOS DEL PORTFOLIO
-   ==========================================================================
-   Guardo el contenido en estructuras reutilizables para que pueda ampliar el
-   portfolio sin duplicar HTML ni cambiar la lógica de cada componente.
-   ========================================================================== */
-// Catálogo de habilidades, herramientas y descripciones de cada área profesional.
+// 04. DATOS — HABILIDADES: categorías, descripciones y herramientas.
 const skills = [
   {
     title: "Diseño y prototipado",
@@ -190,7 +179,7 @@ const skills = [
     tools: [
       {
         name: "C#",
-        image: "Imagenes/Habilidades/Aplicaciones/Programación/programacion c#.png",
+        image: "Imagenes/Habilidades/Aplicaciones/Programación/c sharp.png",
       },
       {
         name: "Unreal Blueprint",
@@ -274,7 +263,7 @@ const skills = [
   },
 ];
 
-// Fichas de proyecto: contenido bilingüe, recursos, equipo, tema y aprendizaje.
+// 05. DATOS — PROYECTOS: ficha bilingüe, medios, equipo y tema.
 const projects = [
   {
     slug: "bugged-out",
@@ -912,7 +901,7 @@ const projects = [
   },
 ];
 
-// Biblioteca de documentos y experimentos que alimenta los filtros de investigación.
+// 06. DATOS — DOCUMENTOS: catálogo que alimenta filtros y modales.
 const documents = [
   {
     title: {
@@ -1084,7 +1073,7 @@ const documents = [
   },
 ];
 
-// Formación y experiencia con descripciones, áreas trabajadas y aprendizajes.
+// 07. DATOS — EXPERIENCIA: formación, trayectoria y aprendizajes.
 const experiences = [
   {
     title: {
@@ -1327,7 +1316,7 @@ const experiences = [
   },
 ];
 
-// Textos estáticos de navegación y secciones en español e inglés.
+// 08. TEXTOS DEL SITIO: etiquetas estáticas traducibles.
 const siteCopy = {
   metaDescription: {
     es: "Portfolio de Pablo Menéndez-Morán, diseñador y desarrollador de videojuegos.",
@@ -1563,7 +1552,7 @@ const siteCopy = {
   },
 };
 
-// Diccionario de etiquetas y valores cortos usados por los componentes dinámicos.
+// 09. DICCIONARIO: equivalencias para el contenido breve y dinámico.
 const translations = {
   "Sobre mí": "About me",
   Habilidades: "Skills",
@@ -1715,6 +1704,7 @@ const translations = {
   "Premio de fotografía OPPO × UDIT": "OPPO × UDIT Photography Award",
 };
 
+// 10. IDIOMA: resolución de textos según la selección actual.
 let language = "es";
 
 const tr = (text) => {
@@ -1722,7 +1712,7 @@ const tr = (text) => {
   return language === "en" ? translations[text] || text : text;
 };
 
-// Reconocimientos con descripción y enlace a la fuente original.
+// 11. DATOS — RECONOCIMIENTOS: tarjetas y referencias externas.
 const awards = [
   {
     title: "Match in Games · UDIT",
@@ -1790,6 +1780,7 @@ const awards = [
   },
 ];
 
+// 12. HELPERS DE PROYECTO: búsqueda y variables de tema.
 const projectText = (value) => tr(value);
 
 const projectBySlug = (slug) => {
@@ -1805,14 +1796,7 @@ const projectThemeStyle = (project) =>
     .map(([name, value]) => `--project-${name}:${value}`)
     .join(";");
 
-/* ==========================================================================
-   3. RENDERIZADO DE PÁGINAS Y COMPONENTES
-   ==========================================================================
-   En este bloque convierto los datos anteriores en HTML y conecto sus
-   acciones. Cada función comprueba primero si su contenedor existe, así el
-   mismo script puede funcionar en las dos páginas.
-   ========================================================================== */
-// Construye el caso de estudio seleccionado a partir del parámetro de la URL.
+// 13. RENDER — FICHA: genera el caso de estudio solicitado en la URL.
 function renderProjectPage() {
   const target = $("#project-page");
   if (!target) return;
@@ -1897,6 +1881,7 @@ function renderProjectPage() {
   }
 }
 
+// 14. DOCUMENTACIÓN: detalle modal, renderizado y filtros.
 let activeDocumentFilter = "all";
 
 function openDocumentModal(item) {
@@ -1908,7 +1893,6 @@ function openDocumentModal(item) {
   );
 }
 
-// Genera las tarjetas de documentación y sus acciones de apertura.
 function renderDocuments() {
   const target = $("#documents-grid");
   if (!target) return;
@@ -1956,11 +1940,11 @@ function setupDocumentFilters() {
   });
 }
 
-// Genera la trayectoria y muestra los detalles de cada experiencia en un modal.
+// 15. EXPERIENCIA: tarjetas de trayectoria y ventanas de detalle.
 function renderExperiences() {
   const target = $("#experience-list");
   if (!target) return;
-  
+
   target.innerHTML = experiences
     .map(
       (experience, index) =>
@@ -1985,7 +1969,6 @@ function renderExperiences() {
     )
     .join("");
 
-  // Abre el modal desde la tarjeta seleccionada
   const handleOpenExperience = (index) => {
     const experience = experiences[index];
     if (!experience) return;
@@ -2018,20 +2001,13 @@ function renderExperiences() {
     );
   };
 
-  // Abre los detalles al seleccionar una tarjeta.
   onAll("[data-experience-card]", "click", (event) => {
     const card = event.currentTarget;
     handleOpenExperience(Number(card.dataset.experienceCard));
   });
 }
 
-/* ==========================================================================
-   4. ANIMACIONES, NAVEGACIÓN Y MODALES
-   ==========================================================================
-   En este bloque concentro las interacciones compartidas para no repetir la
-   misma lógica en cada sección del portfolio.
-   ========================================================================== */
-// Configuración mejorada de observador para animar tarjetas y la línea de tiempo
+// 16. MOVIMIENTO AL DESPLAZAR: observadores, estadísticas y timeline.
 function setupScrollAnimations() {
   setupTimelineProgress();
   setupMobileScrollHover();
@@ -2071,8 +2047,7 @@ function setupScrollAnimations() {
   }
 }
 
-// En pantallas táctiles, convierte la posición central del viewport en el
-// equivalente visual del hover para que las tarjetas mantengan su feedback.
+// 17. TARJETAS TÁCTILES: activa feedback visual en móvil.
 function setupMobileScrollHover() {
   setupMobileScrollHover.observer?.disconnect();
 
@@ -2104,7 +2079,7 @@ function setupMobileScrollHover() {
   setupMobileScrollHover.observer = observer;
 }
 
-// Rellena la línea central según la parte de la timeline que ya ha recorrido el usuario.
+// 18. TIMELINE: calcula y anima el progreso de lectura.
 function setupTimelineProgress() {
   const state = setupTimelineProgress.state || (setupTimelineProgress.state = {
     current: null,
@@ -2165,7 +2140,8 @@ function setupTimelineProgress() {
 
   updateTarget();
 }
-// Actualiza los indicadores del perfil a partir de los datos del portfolio.
+
+// 19. ESTADÍSTICAS: renderiza y anima los indicadores del perfil.
 function renderAboutStats() {
   const target = $("#about-stats");
   if (!target) return;
@@ -2213,7 +2189,7 @@ function animateStatsCounter() {
   });
 }
 
-// Actualiza el idioma, los metadatos y el contenido estático de la página.
+// 20. TRADUCCIÓN: aplica textos, metadatos y atributos accesibles.
 function applyStaticLanguage() {
   const set = (selector, value) => {
     const node = $(selector);
@@ -2288,29 +2264,84 @@ function applyStaticLanguage() {
     );
 }
 
+// 21. MODALES: selectores compartidos y apertura/cierre.
 const $ = (selector) => document.querySelector(selector);
 
 const modalBackdrop = $("#modal-backdrop");
 
 const modalContent = $("#modal-content");
 
-// Abre y cierra el modal compartido, restaurando el estado de la página.
+let modalScrollLockState = null;
+
+function lockPageScrollForModal() {
+  if (modalScrollLockState) return;
+
+  const root = document.documentElement;
+  const body = document.body;
+  const scrollY = window.scrollY;
+  const scrollbarWidth = window.innerWidth - root.clientWidth;
+  const currentPaddingRight =
+    Number.parseFloat(window.getComputedStyle(body).paddingRight) || 0;
+
+  modalScrollLockState = {
+    scrollY,
+    rootOverflow: root.style.overflow,
+    bodyOverflow: body.style.overflow,
+    bodyPosition: body.style.position,
+    bodyTop: body.style.top,
+    bodyLeft: body.style.left,
+    bodyRight: body.style.right,
+    bodyWidth: body.style.width,
+    bodyPaddingRight: body.style.paddingRight,
+  };
+
+  root.style.overflow = "hidden";
+  body.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${scrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+  if (scrollbarWidth > 0) {
+    body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`;
+  }
+}
+
+function unlockPageScrollForModal() {
+  if (!modalScrollLockState) return;
+
+  const state = modalScrollLockState;
+  modalScrollLockState = null;
+
+  const root = document.documentElement;
+  const body = document.body;
+  root.style.overflow = state.rootOverflow;
+  body.style.overflow = state.bodyOverflow;
+  body.style.position = state.bodyPosition;
+  body.style.top = state.bodyTop;
+  body.style.left = state.bodyLeft;
+  body.style.right = state.bodyRight;
+  body.style.width = state.bodyWidth;
+  body.style.paddingRight = state.bodyPaddingRight;
+  window.scrollTo(0, state.scrollY);
+}
+
 function closeModal() {
   if (!modalBackdrop || !modalContent) return;
   modalBackdrop.hidden = true;
   modalContent.innerHTML = "";
-  document.body.style.overflow = "";
+  unlockPageScrollForModal();
 }
 
 function openModal(content) {
   if (!modalBackdrop || !modalContent) return;
   modalContent.innerHTML = content;
   modalBackdrop.hidden = false;
-  document.body.style.overflow = "hidden";
+  lockPageScrollForModal();
   $("#modal-close").focus();
 }
 
-// Construye las tarjetas de habilidades y conecta sus subhabilidades con el modal.
+// 22. RENDER — HABILIDADES: tarjetas, herramientas y subhabilidades.
 function renderSkills() {
   const target = $("#skills-list");
   if (!target) return;
@@ -2333,7 +2364,7 @@ function renderSkills() {
   });
 }
 
-// Genera las tarjetas enlazadas a las fichas individuales de proyecto.
+// 23. RENDER — PROYECTOS: tarjetas, previews e hipervínculos.
 function renderProjects() {
   const target = $("#projects-list");
   if (!target) return;
@@ -2365,7 +2396,7 @@ function renderProjects() {
     .join("");
 }
 
-// Genera las tarjetas de reconocimientos y sus referencias externas.
+// 24. RENDER — RECONOCIMIENTOS: tarjetas y contenido modal.
 function renderAwards() {
   const target = $("#awards-grid");
   if (!target) return;
@@ -2384,7 +2415,7 @@ function renderAwards() {
   });
 }
 
-// Gestiona las anclas, el indicador de lectura y el menú móvil.
+// 25. NAVEGACIÓN: anclas, sección activa, menú móvil y progreso.
 function setupNavigation() {
   const navLinks = [...document.querySelectorAll('.main-nav a[href^="#"]')];
   const sections = navLinks
@@ -2469,7 +2500,7 @@ function setupNavigation() {
   }
 }
 
-// Cambia el idioma y vuelve a generar solo los componentes dinámicos afectados.
+// 26. SELECTOR DE IDIOMA: actualiza y vuelve a renderizar la vista.
 onAll("[data-language]", "click", (event) => {
   const button = event.currentTarget;
   language = button.dataset.language;
@@ -2493,7 +2524,7 @@ onAll("[data-language]", "click", (event) => {
   }
 });
 
-// Aplica una inclinación 3D interactiva que sigue el movimiento del ratón sobre las cartas.
+// 27. EFECTO 3D: inclinación de tarjetas con puntero compatible.
 function setup3DCards() {
   if (
     window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
@@ -2501,17 +2532,15 @@ function setup3DCards() {
   )
     return;
 
-  // Selecciono las tarjetas que admiten el efecto 3D.
   const cards = document.querySelectorAll(".award-card, .experience-card");
 
   cards.forEach((card) => {
-    // Uso propiedades de evento para que el efecto se pueda reemplazar sin
-    // acumular listeners cada vez que se vuelve a renderizar una sección.
+
     card.onmousemove = (e) => {
       const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2; // Posición X relativa al centro
-      const y = e.clientY - rect.top - rect.height / 2;  // Posición Y relativa al centro
-      
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
       const rotateX = -(y / (rect.height / 2)) * 14;
       const rotateY = (x / (rect.width / 2)) * 14;
 
@@ -2532,9 +2561,7 @@ function setup3DCards() {
   });
 }
 
-/* ==========================================================================
-   SIMULACIÓN FÍSICA ADAPTADA (Inflado dramático + Amarilleo progresivo + Shake)
-   ========================================================================== */
+// 28. MINIJUEGO FÍSICO: pausa, arcade, colisiones y puntuación.
 function setupFloatingPhysics() {
   const container = document.getElementById("floating-physics-container");
   if (!container) return;
@@ -2542,7 +2569,6 @@ function setupFloatingPhysics() {
   const starEl = container.querySelector(".star-bonus-item");
   if (!items.length || !starEl) return;
 
-  // Estructura interna (.star-inner) para aislar físicas y transformaciones de escalado
   let starInnerEl = starEl.querySelector(".star-inner");
   if (!starInnerEl) {
     starInnerEl = document.createElement("div");
@@ -2557,13 +2583,10 @@ function setupFloatingPhysics() {
   const freezeBtn = document.getElementById("physics-freeze-btn");
   const scoreDisplay = document.getElementById("score-display");
   const scoreCounterWrapper = document.getElementById("physics-score-counter");
-  
-  // ==========================================
-  // GESTIÓN ROBUSTA DEL RÉCORD Y RESETEO
-  // ==========================================
+
   let highScoreDisplay = document.getElementById("high-score-display");
   let highScoreWrapper = document.getElementById("physics-highscore-wrapper");
-  
+
   if (!highScoreDisplay && scoreCounterWrapper) {
     highScoreWrapper = document.createElement("div");
     highScoreWrapper.id = "physics-highscore-wrapper";
@@ -2654,12 +2677,12 @@ function setupFloatingPhysics() {
       container.classList.add("is-arcade-active");
       arcadeCloseBtn.hidden = false;
       arcadeToggleBtn.style.display = "none";
-      
+
       document.body.style.overflow = "hidden";
       document.body.style.position = "fixed";
       document.body.style.width = "100%";
       document.body.style.height = "100%";
-      
+
       if (isFrozen) { unfreezePhysics(); }
     };
 
@@ -2669,7 +2692,7 @@ function setupFloatingPhysics() {
       container.classList.remove("is-arcade-active");
       arcadeCloseBtn.hidden = true;
       arcadeToggleBtn.style.display = "";
-      
+
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.width = "";
@@ -2690,13 +2713,13 @@ function setupFloatingPhysics() {
 
       if (isFrozen) {
         if (starBody.active) deactivateStar();
-        
+
         const cRect = container.getBoundingClientRect();
         const isMobile = window.innerWidth <= 800;
         const boundW = isArcadeActive && isMobile ? window.innerWidth : (cRect.width || container.offsetWidth || 800);
-        const startX = boundW - 140; 
-        const startY = 140;          
-        const gapY = 120;            
+        const startX = boundW - 140;
+        const startY = 140;
+        const gapY = 120;
 
         let currentItemIndex = 0;
         bodies.forEach((b) => {
@@ -2720,11 +2743,11 @@ function setupFloatingPhysics() {
     const cRect = container.getBoundingClientRect();
     const initialWidth = window.innerWidth <= 800 ? window.innerWidth : (cRect.width || container.offsetWidth || 800);
     const initialHeight = window.innerWidth <= 800 ? window.innerHeight : (cRect.height || container.offsetHeight || 600);
-    
+
     const minX = initialWidth * 0.45;
     const x = minX + Math.random() * (initialWidth - minX - size - 50);
     const y = Math.random() * (initialHeight - size - 100) + 50;
-    
+
     bodies.push({
       el,
       x,
@@ -2776,40 +2799,38 @@ function setupFloatingPhysics() {
     setTimeout(() => popup.remove(), 700);
   };
 
-  // Función para activar la sacudida de pantalla si el x2 está activo
   const triggerScreenShake = (intensity = 1) => {
     if (!multiplierActive) return;
-    
+
     const shakeX = Math.min(10, Math.max(3, intensity * 2.5));
     const shakeY = Math.min(8, Math.max(2, intensity * 2));
-    
+
     container.style.setProperty("--shake-x", `${shakeX}px`);
     container.style.setProperty("--shake-y", `${shakeY}px`);
-    
+
     container.classList.remove("is-shaking");
-    void container.offsetWidth; // Force Reflow
+    void container.offsetWidth;
     container.classList.add("is-shaking");
-    
+
     setTimeout(() => container.classList.remove("is-shaking"), 180);
   };
 
-  // Genera la estela visible y centrada de polvo de hada blanco
   const spawnFairyDust = (centerX, centerY) => {
     for (let i = 0; i < 12; i++) {
       const dust = document.createElement("div");
       dust.className = "fairy-dust-particle";
       dust.style.left = `${centerX}px`;
       dust.style.top = `${centerY}px`;
-      
+
       const angle = Math.random() * Math.PI * 2;
       const distance = 25 + Math.random() * 55;
       const tx = Math.cos(angle) * distance;
       const ty = Math.sin(angle) * distance;
-      
+
       dust.style.setProperty("--tx", `${tx}px`);
       dust.style.setProperty("--ty", `${ty}px`);
       dust.style.animationDelay = `${Math.random() * 0.05}s`;
-      
+
       container.appendChild(dust);
       setTimeout(() => dust.remove(), 650);
     }
@@ -2829,15 +2850,15 @@ function setupFloatingPhysics() {
       particle.className = "star-explosion-particle";
       particle.style.left = `${centerX}px`;
       particle.style.top = `${centerY}px`;
-      
+
       const angle = (Math.PI * 2 / 16) * i;
       const distance = 80 + Math.random() * 70;
       const tx = Math.cos(angle) * distance;
       const ty = Math.sin(angle) * distance;
-      
+
       particle.style.setProperty("--tx", `${tx}px`);
       particle.style.setProperty("--ty", `${ty}px`);
-      
+
       container.appendChild(particle);
       setTimeout(() => particle.remove(), 600);
     }
@@ -2845,9 +2866,9 @@ function setupFloatingPhysics() {
 
   const resetCombo = () => {
     totalScore = 0;
-    newRecordCelebrated = false; 
+    newRecordCelebrated = false;
     if (scoreDisplay) scoreDisplay.textContent = totalScore;
-    
+
     if (highScoreDisplay) {
       highScoreDisplay.classList.remove("is-record-glowing-loop");
     }
@@ -2865,7 +2886,7 @@ function setupFloatingPhysics() {
     totalScore += finalPoints;
     totalReboundsCount++;
     if (scoreDisplay) scoreDisplay.textContent = totalScore;
-    
+
     if (totalScore > highScore) {
       highScore = totalScore;
       localStorage.setItem("physics_arcade_highscore", highScore);
@@ -2873,20 +2894,20 @@ function setupFloatingPhysics() {
         highScoreDisplay.textContent = highScore;
         highScoreDisplay.classList.add("is-record-glowing-loop");
       }
-      
+
       if (!newRecordCelebrated) {
         newRecordCelebrated = true;
         showCenterRecordBanner(highScore);
       }
     }
-    
+
     if (scoreCounterWrapper) {
       scoreCounterWrapper.classList.remove("is-urgent");
       container.classList.remove("is-urgent-warning");
       scoreCounterWrapper.classList.add("is-bump");
       setTimeout(() => scoreCounterWrapper.classList.remove("is-bump"), 150);
     }
-    
+
     spawnPopupText(multiplierActive ? `+${finalPoints} (x2)` : `+${finalPoints}`, x, y, color);
 
     if (comboTimer) clearTimeout(comboTimer);
@@ -2919,7 +2940,6 @@ function setupFloatingPhysics() {
     if (multiplierTimer) clearTimeout(multiplierTimer);
     if (multiplierBlinkTimer) clearTimeout(multiplierBlinkTimer);
 
-    // A los 4.5s activa el aviso parpadeante sutil de borde y badge
     multiplierBlinkTimer = setTimeout(() => {
       if (multiplierActive) {
         container.classList.add("is-multiplier-ending");
@@ -2927,7 +2947,6 @@ function setupFloatingPhysics() {
       }
     }, 4500);
 
-    // A los 6.5s finaliza el multiplicador
     multiplierTimer = setTimeout(() => {
       multiplierActive = false;
       container.classList.remove("is-multiplier-active", "is-multiplier-ending");
@@ -2944,12 +2963,12 @@ function setupFloatingPhysics() {
     starEl.classList.remove("hit-level-1", "hit-level-2", "hit-level-3", "hit-level-4");
     if (starInnerEl) starInnerEl.style.transform = `scale(1)`;
     lastStarHitTime = 0;
-    
+
     const cRect = container.getBoundingClientRect();
     const isMobile = window.innerWidth <= 800;
     const boundW = isMobile ? window.innerWidth : (cRect.width || container.offsetWidth || 800);
     const boundH = isMobile ? window.innerHeight : (cRect.height || container.offsetHeight || 600);
-    
+
     starBody.x = (boundW * 0.45) + Math.random() * (boundW * 0.5 - starSize);
     starBody.y = Math.random() * (boundH - starSize - 100) + 50;
     starBody.vx = (Math.random() - 0.5) * 4.5;
@@ -2961,7 +2980,6 @@ function setupFloatingPhysics() {
     if (starBody.timer) clearTimeout(starBody.timer);
     if (starBody.warningTimer) clearTimeout(starBody.warningTimer);
 
-    // A los 8.5s activa el parpadeo de tensión antes de desaparecer
     starBody.warningTimer = setTimeout(() => {
       if (starBody.active) {
         starEl.classList.add("is-disappearing");
@@ -2981,7 +2999,7 @@ function setupFloatingPhysics() {
 
   bodies.forEach((body) => {
     const onStart = (clientX, clientY) => {
-      if (isFrozen) return; 
+      if (isFrozen) return;
       const isMobile = window.innerWidth <= 800;
       if (isMobile && !isArcadeActive) return;
 
@@ -2995,8 +3013,13 @@ function setupFloatingPhysics() {
       lastMouseY = mouseY;
     };
 
-    body.el.addEventListener("mousedown", (e) => { e.preventDefault(); onStart(e.clientX, e.clientY); });
-    body.el.addEventListener("touchstart", (e) => { if (e.touches.length > 0) onStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    body.el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      onStart(e.clientX, e.clientY);
+    });
+    body.el.addEventListener("touchstart", (e) => {
+      if (e.touches.length > 0) onStart(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
   });
 
   const onMove = (clientX, clientY) => {
@@ -3015,7 +3038,9 @@ function setupFloatingPhysics() {
   };
 
   window.addEventListener("mousemove", (e) => onMove(e.clientX, e.clientY));
-  window.addEventListener("touchmove", (e) => { if (e.touches.length > 0) onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+  window.addEventListener("touchmove", (e) => {
+    if (e.touches.length > 0) onMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
 
   const onEnd = () => {
     if (activeBody) {
@@ -3055,7 +3080,9 @@ function setupFloatingPhysics() {
 
     let obstacleBoxes = [];
     if (!isMobile || !isArcadeActive) {
-      const copyElements = document.querySelectorAll(".hero-copy h1, .hero-copy .hero-lede, .hero-copy .eyebrow");
+      const copyElements = document.querySelectorAll(
+        ".hero-copy h1, .hero-copy .hero-lede, .hero-copy .eyebrow, .hero-copy .button",
+      );
       if (copyElements.length > 0) {
         let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
         copyElements.forEach(el => {
@@ -3074,8 +3101,7 @@ function setupFloatingPhysics() {
       if (b.isStar && !b.active) continue;
 
       let diameter = b.radius * 2;
-      
-      // Amortiguación del escalado de impacto en fichas normales
+
       if (!b.isStar) {
         b.scale += (1 - b.scale) * 0.1;
       }
@@ -3128,7 +3154,7 @@ function setupFloatingPhysics() {
           else if (minD === dRight) { b.x = box.right; b.vx *= -0.8; }
           else if (minD === dTop) { b.y = box.top - diameter; b.vy *= -0.8; }
           else if (minD === dBottom) { b.y = box.bottom; b.vy *= -0.8; }
-          
+
           if (!b.isStar && b !== activeBody) {
             const impactSpeed = Math.hypot(b.vx, b.vy);
             if (impactSpeed > 2.8) {
@@ -3177,24 +3203,21 @@ function setupFloatingPhysics() {
           if (impactSpeed > 0.8) {
             let midX = (b.x + b2.x) / 2 + b.radius;
             let midY = (b.y + b2.y) / 2 + b.radius;
-            
+
             if (b.isStar || b2.isStar) {
               let starObj = b.isStar ? b : b2;
-              
+
               const now = Date.now();
               if (!starObj.isDragging && now - lastStarHitTime > 350) {
                 lastStarHitTime = now;
                 starObj.hits++;
-                
-                // Inflado masivo y progresivo de la estrella (1.0 -> 1.4 -> 1.8 -> 2.2 -> 2.6)
+
                 starObj.scale = 1 + (starObj.hits * 0.4);
-                
-                // Añade clases de nivel para intensificar progresivamente el color amarillo y el brillo
+
                 if (starObj.hits > 0 && starObj.hits < 5) {
                   starEl.classList.add(`hit-level-${starObj.hits}`);
                 }
 
-                // Estela de polvo de hada
                 spawnFairyDust(midX, midY);
 
                 starEl.classList.add("star-hit-glow");
@@ -3232,7 +3255,6 @@ function setupFloatingPhysics() {
         }
       }
 
-      // Aplicación de transformaciones
       if (b.isStar) {
         b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0px)`;
         if (starInnerEl) {

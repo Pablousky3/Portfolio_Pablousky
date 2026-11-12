@@ -1,11 +1,9 @@
 <!doctype html>
-<!--
-  Esta plantilla muestra una ficha de proyecto. El contenido se genera desde
-  los datos de script.js usando el parámetro project de la URL.
--->
+
 <html lang="es">
+  <!-- CONFIGURACIÓN DEL DOCUMENTO: metadatos y estilos compartidos. -->
   <head>
-    <!-- Metadatos y estilos compartidos con la página principal. -->
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
@@ -13,14 +11,15 @@
       content="Proyecto del portfolio de Pablo Menéndez-Morán."
     />
     <title>Pablo · Proyecto</title>
-    <!-- Favicon: reemplaza "data:," por la ruta del icono que elijas. -->
+
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="styles.css?v=34" />
   </head>
   <body data-page="project">
     <div class="site-shell project-site-shell">
       <div class="scroll-progress" aria-hidden="true"></div>
-      <!-- Cabecera común: marca, navegación y selección de idioma. -->
+
+      <!-- CABECERA COMPARTIDA: marca, idioma y navegación. -->
       <header class="topbar">
         <a class="brand" href="index.html#top" aria-label="Ir al inicio">
           <span class="brand-character-mask">
@@ -61,10 +60,10 @@
         </nav>
       </header>
 
-      <!-- JavaScript renderiza aquí el caso de estudio solicitado en la URL. -->
+      <!-- CASO DE ESTUDIO: JavaScript inserta el proyecto indicado en la URL. -->
       <main id="project-page" class="project-page" aria-live="polite"></main>
 
-      <!-- Pie de página con acceso de vuelta al portfolio. -->
+      <!-- PIE DE PÁGINA: créditos y regreso al portfolio. -->
       <footer class="footer">
         <span>© 2026 Pablo Menéndez-Morán</span>
         <span
@@ -73,7 +72,8 @@
         <a href="index.html#top">Volver arriba ↑</a>
       </footer>
     </div>
-    <!-- Script común: traduce la navegación y genera la ficha de proyecto. -->
+
+    <!-- Lógica compartida: traducción y contenido de proyecto. -->
     <script src="script.js?v=28"></script>
   </body>
 </html>
