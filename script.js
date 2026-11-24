@@ -31,19 +31,87 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// 02. MARCA: alterna la imagen estática y animada del personaje.
+// 02. MARCA: alterna la imagen estática y animada del personaje (cambia según el enfoque de "Sobre mí").
+const MASCOTS = {
+  // naranja (Narrativa): la mascota original
+  narrative: {
+    still: "Imagenes/personaje-estatico.png",
+    idle: "Imagenes/personaje.gif",
+    pawnIdle: "Imagenes/recorrido-parado.gif",
+    pawnRun: "Imagenes/recorrido-correr.gif",
+  },
+  // verde (Sistemas)
+  systems: {
+    still: "Imagenes/mascota-verde-estatico.png",
+    idle: "Imagenes/mascota-verde-idle.gif",
+    pawnIdle: "Imagenes/mascota-verde-idle.gif",
+    pawnRun: "Imagenes/mascota-verde-correr.gif",
+  },
+  // azul (Prototipo)
+  prototype: {
+    still: "Imagenes/mascota-azul-estatico.png",
+    idle: "Imagenes/mascota-azul-idle.gif",
+    pawnIdle: "Imagenes/mascota-azul-idle.gif",
+    pawnRun: "Imagenes/mascota-azul-correr.gif",
+  },
+};
+const FOCUS_ACCENTS = {
+  narrative: "#ff6b4a",
+  systems: "#b8d96b",
+  prototype: "#7cc7ff",
+};
+let savedMascotFocus = "narrative";
+try {
+  savedMascotFocus = localStorage.getItem("pmm:selected-focus") || savedMascotFocus;
+} catch {
+  /* El navegador puede bloquear el almacenamiento en modo privado. */
+}
+let currentMascot = MASCOTS[savedMascotFocus] || MASCOTS.narrative;
+const applyPersistedFocusTheme = (focusId = savedMascotFocus) => {
+  const accent = FOCUS_ACCENTS[focusId] || FOCUS_ACCENTS.narrative;
+  document.documentElement.style.setProperty("--coral", accent);
+  document.documentElement.style.setProperty("--pmm-accent", accent);
+};
+applyPersistedFocusTheme();
+window.pmmMascot = () => currentMascot;
+
+// Precarga para que el cambio de color/hover no parpadee.
+Object.values(MASCOTS).forEach((m) =>
+  Object.values(m).forEach((src) => { new Image().src = src; }),
+);
+
 const character = document.querySelector(".brand-character");
+let characterHovered = false;
 
 if (character) {
-  const staticImage = character.src;
-  const animatedGif = character.dataset.gif;
+  character.dataset.gif = currentMascot.idle;
+  character.src = currentMascot.still;
   character.addEventListener("mouseenter", () => {
-    character.src = animatedGif;
+    characterHovered = true;
+    character.src = currentMascot.idle;
   });
   character.addEventListener("mouseleave", () => {
-    character.src = staticImage;
+    characterHovered = false;
+    character.src = currentMascot.still;
   });
 }
+
+// Cambia la mascota del nav y del recorrido de niveles según el enfoque activo.
+window.pmmSetMascot = (focusId) => {
+  currentMascot = MASCOTS[focusId] || MASCOTS.narrative;
+  applyPersistedFocusTheme(focusId);
+  try {
+    localStorage.setItem("pmm:selected-focus", focusId);
+  } catch {
+    /* La mascota sigue funcionando aunque no haya almacenamiento disponible. */
+  }
+  if (character) {
+    character.dataset.gif = currentMascot.idle;
+    character.src = characterHovered ? currentMascot.idle : currentMascot.still;
+  }
+  document.querySelectorAll(".pmm-pawn .pmm-idle").forEach((img) => { img.src = currentMascot.pawnIdle; });
+  document.querySelectorAll(".pmm-pawn .pmm-run").forEach((img) => { img.src = currentMascot.pawnRun; });
+};
 
 // 03. UTILIDADES: normalización de listas y registro de eventos.
 const arr = (value) => (Array.isArray(value) ? value : []);
@@ -687,11 +755,11 @@ const projects = [
     published: true,
     title: {
       es: "Slap League",
-      en: "Collaborative project",
+      en: "Slap League",
     },
     type: {
-      es: "Trabajo en equipo",
-      en: "Team project",
+      es: "Videojuego en equipo",
+      en: "Team video game",
     },
     date: {
       es: "Añadir fecha",
@@ -813,11 +881,11 @@ const projects = [
     published: true,
     title: {
       es: "Cabras Locas",
-      en: "Collaborative project",
+      en: "Cabras Locas",
     },
     type: {
-      es: "Trabajo en equipo",
-      en: "Team project",
+      es: "Juego de cartas",
+      en: "Card game",
     },
     date: {
       es: "Añadir fecha",
@@ -1749,6 +1817,12 @@ const translations = {
   "Abrir demo": "Open demo",
   "Fecha de creación": "Created",
   "Mi rol": "My role",
+  "Año": "Year",
+  "Formato": "Format",
+  "Género": "Genre",
+  "Estado": "Status",
+  "Datos del proyecto": "Project details",
+  "Ver proyecto": "View project",
   Descripción: "Description",
   "Lo aprendido": "What I learned",
   "Resumen del juego": "Game overview",
@@ -2424,7 +2498,7 @@ function setupMobileScrollHover() {
   }
 
   const cards = document.querySelectorAll(
-    ".skill-card, .project-card, .document-card, .award-card, .experience-card",
+    ".skill-card, .project-card:not(.game-box-card), .game-box-card .gbc-stage, .document-card, .award-card, .experience-card",
   );
   if (!cards.length) return;
 
@@ -2508,7 +2582,7 @@ function setupTimelineProgress() {
 
 // 19. SOBRE MÍ: selector de enfoque y contadores.
 const aboutState = {
-  focus: "narrative",
+  focus: MASCOTS[savedMascotFocus] ? savedMascotFocus : "narrative",
   bound: false,
   statsDone: false,
 };
@@ -2639,6 +2713,8 @@ function setAboutFocus(id, options = {}) {
 
   const section = $("#about");
   if (section) section.dataset.focus = focus.id;
+
+  window.pmmSetMascot?.(focus.id);
 
   document.querySelectorAll(".cs-focus-btn").forEach((button) => {
     const isActive = button.dataset.focus === focus.id;
@@ -3015,6 +3091,62 @@ function openModal(content) {
 }
 
 // 22. RENDER — HABILIDADES: árbol de ramas, nodos con nivel e inventario de herramientas.
+const SKILL_BUILDS = [
+  {
+    id: "prototype", icon: "⚡",
+    title: { es: "Prototipo jugable en horas", en: "Playable prototype in hours" },
+    text: { es: "Empiezo por las reglas mínimas y el greybox para probar el game feel en pantalla antes de invertir tiempo en arte final.", en: "I start with the minimum rules and a greybox to test game feel on screen before investing time in final art." },
+    skills: ["0-2", "0-4", "2-0", "2-1"], tools: ["unity", "unreal", "c", "unreal-blueprint"], chipTools: ["Unity", "Unreal"],
+  },
+  {
+    id: "narrative", icon: "📖",
+    title: { es: "Narrativa interactiva y atmósfera", en: "Interactive narrative and atmosphere" },
+    text: { es: "Conecto estructura de decisiones, tensión espacial y dirección visual para que el escenario comunique tanto como el texto.", en: "I connect decision structures, spatial tension and visual direction so the setting communicates as much as the text." },
+    skills: ["0-0", "0-1", "3-0", "3-1"], tools: ["figma", "aseprite", "photoshop"], chipTools: ["Twine", "Ink", "Figma"],
+  },
+  {
+    id: "research", icon: "🔍",
+    title: { es: "Diseño basado en datos e investigación", en: "Data-informed design and research" },
+    text: { es: "Cruzo observación directa en playtests con métricas y prototipos rápidos de interfaz para eliminar fricciones sin perder profundidad.", en: "I combine direct playtest observation with metrics and quick interface prototypes to remove friction without losing depth." },
+    skills: ["0-3", "0-4", "1-0", "1-1"], tools: ["figma", "chatgpt", "gemini"], chipTools: ["Figma", "Excel", "Python"],
+  },
+  {
+    id: "physical", icon: "🎲",
+    title: { es: "Experiencia física / Escape Room", en: "Physical experience / Escape Room" },
+    text: { es: "Diseño cadenas de puzles táctiles y pistas diegéticas donde el espacio físico guía al jugador sin necesidad de tutoriales.", en: "I design tactile puzzle chains and diegetic clues where physical space guides players without tutorials." },
+    skills: ["0-0", "0-2", "0-4", "3-0"], tools: ["aseprite", "photoshop", "miro"], chipTools: ["Fabricación", "Guionización"],
+  },
+];
+
+const skillBuildToolId = (name) => String(name).trim().toLowerCase().replace(/[^a-z0-9]+/gi, "-");
+
+function applySkillBuild(target, buildId = "") {
+  const build = SKILL_BUILDS.find((item) => item.id === buildId) || null;
+  target.querySelectorAll("[data-skill], [data-tool]").forEach((element) => {
+    const isSkill = element.dataset.skill != null;
+    const key = isSkill ? element.dataset.skill : element.dataset.tool;
+    const included = build && (isSkill ? build.skills.includes(key) : build.tools.includes(key));
+    element.classList.toggle("is-synergy", Boolean(included));
+    element.classList.toggle("is-dimmed", Boolean(build && !included));
+    if (isSkill) {
+      const sequence = build ? build.skills.indexOf(key) : -1;
+      if (sequence >= 0) element.style.setProperty("--build-index", sequence);
+      else element.style.removeProperty("--build-index");
+    }
+  });
+  target.querySelectorAll(".st-build-btn").forEach((button) => {
+    const active = button.dataset.build === buildId;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  const banner = target.querySelector(".st-build-banner");
+  if (!banner) return;
+  if (!build) { banner.hidden = true; banner.innerHTML = ""; return; }
+  const chips = [...build.skills.map((key) => target.querySelector(`[data-skill="${key}"] .st-name`)?.textContent), ...(build.chipTools || [])].filter(Boolean);
+  banner.hidden = false;
+  banner.innerHTML = `<div class="st-build-banner-copy"><strong>${build.icon} ${tr(build.title)}</strong><p>${tr(build.text)}</p></div><div class="st-build-chips" aria-label="${language === "en" ? "Connected elements" : "Elementos conectados"}">${chips.map((chip) => `<span>${chip}</span>`).join("")}</div>`;
+}
+
 function renderSkills() {
   const target = $("#skills-list");
   if (!target) return;
@@ -3078,6 +3210,18 @@ function renderSkills() {
         <div class="st-root-copy"><small>${rootLabel}</small><b>${rootTitle}</b></div>
         <span class="st-root-count"><b>${skills.length}</b> ${branchWord} · <b>${totalNodes}</b> ${nodeWord}</span>
       </div>
+      <div class="st-builds" role="group" aria-label="${isEnglish ? "Work builds carousel" : "Carrusel de builds de trabajo"}">
+        <span class="st-builds-label">BUILDS / LOADOUTS</span>
+        <button type="button" class="st-build-arrow st-build-prev" aria-label="${isEnglish ? "Previous build" : "Build anterior"}">‹</button>
+        <div class="st-build-viewport">
+          <div class="st-build-track">
+            ${SKILL_BUILDS.map((build) => `<button type="button" class="st-build-btn" data-build="${build.id}" aria-pressed="false"><span aria-hidden="true">${build.icon}</span>${tr(build.title)}</button>`).join("")}
+          </div>
+        </div>
+        <button type="button" class="st-build-arrow st-build-next" aria-label="${isEnglish ? "Next build" : "Build siguiente"}">›</button>
+        <button type="button" class="st-build-clear" aria-label="${isEnglish ? "Show all skills" : "Ver todas las habilidades"}">×</button>
+      </div>
+      <div class="st-build-banner" hidden aria-live="polite"></div>
       <div class="st-trunk" aria-hidden="true"></div>
       <div class="st-branches">
         ${skills
@@ -3115,7 +3259,7 @@ function renderSkills() {
               ${skill.tools
                 .map(
                   (tool) =>
-                    `<span class="tool-icon st-slot" role="img" data-tooltip="${tr(tool.name)}" title="${tr(tool.name)}" tabindex="0" aria-label="${tr(tool.name)}"><img src="${tool.image}" alt=""></span>`,
+                    `<span class="tool-icon st-slot" role="img" data-tool="${skillBuildToolId(tool.name)}" data-tooltip="${tr(tool.name)}" title="${tr(tool.name)}" tabindex="0" aria-label="${tr(tool.name)}"><img src="${tool.image}" alt=""></span>`,
                 )
                 .join("")}
             </div>
@@ -3150,6 +3294,24 @@ function renderSkills() {
     image.addEventListener("error", showFallback, { once: true });
     if (image.complete && !image.naturalWidth) showFallback();
   });
+
+  const buildTrack = target.querySelector(".st-build-track");
+  const buildButtons = [...target.querySelectorAll(".st-build-btn")];
+  let buildSlide = 0;
+  const moveBuildSlide = (direction) => {
+    buildSlide = (buildSlide + direction + buildButtons.length) % buildButtons.length;
+    buildTrack?.style.setProperty("--build-slide", buildSlide);
+  };
+  target.querySelector(".st-build-prev")?.addEventListener("click", () => moveBuildSlide(-1));
+  target.querySelector(".st-build-next")?.addEventListener("click", () => moveBuildSlide(1));
+
+  buildButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const current = target.querySelector(".st-build-btn.is-active")?.dataset.build;
+      applySkillBuild(target, current === button.dataset.build ? "" : button.dataset.build);
+    });
+  });
+  target.querySelector(".st-build-clear")?.addEventListener("click", () => applySkillBuild(target));
 
   onAll("[data-skill]", "click", (event) => {
     const button = event.currentTarget;
@@ -3258,9 +3420,20 @@ function renderProjects() {
       const description = descriptionText && !isPlaceholder(descriptionText)
         ? `<p class="project-case-description">${descriptionText}</p>`
         : "";
-      const caseMeta = [projectText(project.date), projectText(project.tools)]
-        .filter((value) => value && !isPlaceholder(value))
-        .join(" · ");
+      const genreDetail = (project.summary?.details || []).find((detail) =>
+        /^(género|genre)$/i.test(projectText(detail.label)),
+      );
+      const projectFacts = [
+        { label: "Año", value: projectText(project.date) },
+        { label: "Formato", value: projectText(project.type) },
+        { label: "Género", value: projectText(genreDetail?.value) },
+        { label: "Estado", value: statusText },
+        { label: "Herramientas", value: projectText(project.tools) },
+        { label: "Equipo", value: projectText(project.team?.name) },
+      ].filter(({ value }) => value && !isPlaceholder(value));
+      const projectFactsMarkup = projectFacts
+        .map(({ label, value }) => `<span class="project-fact"><span>${tr(label)}</span><strong>${value}</strong></span>`)
+        .join("");
       const caseMark = projectText(project.title)
         .split(/[\s-]+/)
         .filter(Boolean)
@@ -3269,8 +3442,8 @@ function renderProjects() {
         .join("")
         .toUpperCase();
       return `
-        <a class="project-card game-box-card case-${project.caseStyle || "generic"}${project.featured ? " is-featured" : ""}" style="${projectThemeStyle(project)}" href="project.html?project=${encodeURIComponent(project.slug.trim())}">
-          <div class="gbc-stage">
+        <article class="project-card game-box-card case-${project.caseStyle || "generic"}${project.featured ? " is-featured" : ""}" style="${projectThemeStyle(project)}">
+          <a class="gbc-stage" href="project.html?project=${encodeURIComponent(project.slug.trim())}" aria-label="${tr("Ver proyecto")}: ${projectText(project.title)}">
           <div class="gbc-case">
           <span class="gbc-disc" aria-hidden="true"></span>
           <span class="project-case-spine" aria-hidden="true"><span>${projectText(project.title)}</span></span>
@@ -3288,15 +3461,14 @@ function renderProjects() {
             <span class="project-case-rim" aria-hidden="true"></span>
           </div>
           </div>
-          </div>
+          </a>
           <span class="gbc-plank" aria-hidden="true"></span>
-          <div class="project-content${caseMeta || role || description ? "" : " is-case-empty"}">
-            ${caseMeta ? `<p class="project-case-meta">${caseMeta}</p>` : ""}
+          <div class="project-content${projectFactsMarkup || role || description ? "" : " is-case-empty"}" role="group" aria-label="${tr("Datos del proyecto")}">
+            ${projectFactsMarkup ? `<div class="project-facts">${projectFactsMarkup}</div>` : ""}
             ${role}
             ${description}
-            <span class="project-link">${tr("Ver página del proyecto")} <b aria-hidden="true">↗</b></span>
           </div>
-        </a>`;
+        </article>`;
     })
     .join("");
 
@@ -4249,6 +4421,41 @@ function setupFloatingPhysics() {
     },
   };
 
+  /* El progreso visual de la partida vive solo durante la visita actual.
+     Si la página se recarga, las banderas vuelven a estar sin plantar; al
+     navegar a una ficha y regresar, se conservan en el mismo contexto. */
+  const sessionStore = {
+    get(k, d) {
+      try {
+        const v = sessionStorage.getItem("pmm:session:" + k);
+        return v === null ? d : JSON.parse(v);
+      } catch {
+        return d;
+      }
+    },
+    set(k, v) {
+      try {
+        sessionStorage.setItem("pmm:session:" + k, JSON.stringify(v));
+      } catch {
+        /* sin almacenamiento de sesión */
+      }
+    },
+    remove(k) {
+      try {
+        sessionStorage.removeItem("pmm:session:" + k);
+      } catch {
+        /* sin almacenamiento de sesión */
+      }
+    },
+  };
+
+  try {
+    const navigation = performance.getEntriesByType?.("navigation")[0];
+    if (navigation?.type === "reload") sessionStore.remove("experience-flags");
+  } catch {
+    /* Si no hay Navigation Timing, no se borra el estado entre páginas. */
+  }
+
   /* ---------- Estado global: monedas y 3 trofeos ---------- */
   const TROPHIES = {
     pet: ["Mejor amigo del retrato", "Portrait's best friend"],
@@ -4577,7 +4784,7 @@ function setupFloatingPhysics() {
     const played = () => store.get("played", []);
     const stamp = () => {
       const p = played();
-      qa("a.project-card", list).forEach((a) => {
+      qa(".gbc-stage", list).forEach((a) => {
         if (!p.includes(slugOf(a))) return;
         let s = q(".pmm-stamp", a);
         if (!s) {
@@ -4592,7 +4799,7 @@ function setupFloatingPhysics() {
     new MutationObserver(stamp).observe(list, { childList: true });
     stamp();
     list.addEventListener("click", (e) => {
-      const a = e.target.closest("a.project-card");
+      const a = e.target.closest(".gbc-stage");
       if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       if (a.classList.contains("is-inserting")) { e.preventDefault(); return; }
       const slug = slugOf(a), p = played();
@@ -4631,7 +4838,7 @@ function setupFloatingPhysics() {
           pawn = document.createElement("span");
           pawn.className = "pmm-pawn"; pawn.dataset.at = "0";
           pawn.setAttribute("aria-hidden", "true");
-          pawn.innerHTML = '<span class="pmm-pawn-sprite"><img class="pmm-idle" src="Imagenes/recorrido-parado.gif" alt=""><img class="pmm-run" src="Imagenes/recorrido-correr.gif" alt=""></span>';
+          pawn.innerHTML = '<span class="pmm-pawn-sprite"><img class="pmm-idle" src="' + window.pmmMascot().pawnIdle + '" alt=""><img class="pmm-run" src="' + window.pmmMascot().pawnRun + '" alt=""></span>';
           g.appendChild(pawn);
         }
         requestAnimationFrame(() => place(g, pawn));
@@ -4697,6 +4904,14 @@ function setupFloatingPhysics() {
     const list = q("#experience-list");
     if (!list) return;
     const seen = new Set();
+    let sessionFlags = sessionStore.get("experience-flags", []);
+    const hasSessionFlag = (index) => sessionFlags.includes(String(index));
+    const plantSessionFlag = (index) => {
+      const key = String(index);
+      if (hasSessionFlag(index)) return;
+      sessionFlags = [...sessionFlags, key];
+      sessionStore.set("experience-flags", sessionFlags);
+    };
     let io = null;
     const check = () => {
       const line = window.innerHeight * 0.72;
@@ -4704,9 +4919,12 @@ function setupFloatingPhysics() {
       qa(".experience-card-wrapper", list).forEach((w, i) => {
         const f = q(".pmm-flag", w);
         if (!f) return;
-        if (!f.classList.contains("is-planted") && seen.has(w.dataset.experience) && w.getBoundingClientRect().top + 40 < line) {
-          f.classList.add("is-planted");
-          claim("flag:" + i, 2);
+          const rect = w.getBoundingClientRect();
+          const enteredExperience = seen.has(w.dataset.experience) || (rect.top < window.innerHeight * 0.88 && rect.bottom > 0);
+          if (!f.classList.contains("is-planted") && enteredExperience && rect.top + 40 < line) {
+            f.classList.add("is-planted");
+            plantSessionFlag(i);
+            claim("flag:" + i, 2);
         }
         if (!f.classList.contains("is-planted")) all = false;
       });
@@ -4728,7 +4946,7 @@ function setupFloatingPhysics() {
       qa(".experience-card-wrapper", list).forEach((w, i) => {
         if (q(".pmm-flag", w)) return;
         const f = document.createElement("span");
-        f.className = "pmm-flag" + (G.has("flag:" + i) ? " is-planted is-instant" : "");
+        f.className = "pmm-flag" + (hasSessionFlag(i) ? " is-planted is-instant" : "");
         f.setAttribute("aria-hidden", "true");
         f.innerHTML = "<i></i><b></b>";
         w.appendChild(f);
@@ -4948,6 +5166,9 @@ function setupFloatingPhysics() {
     panel.querySelector(".pmm-shop-close")?.addEventListener("click", closePanel);
     backdrop.addEventListener("click", closePanel);
     window.addEventListener("pmm:open-shop", openPanel);
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("#pmm-shop-toggle")) openPanel();
+    });
     document.addEventListener("keydown", (event) => {
       if (panel.hidden) return;
       if (event.key === "Escape") {
@@ -5008,7 +5229,11 @@ function setupFloatingPhysics() {
     render();
   }
 
-  const run = () => { initAbout(); initProjects(); initMap(); initExperience(); initShop(); };
+  const run = () => {
+    [initAbout, initProjects, initMap, initExperience, initShop].forEach((initializer) => {
+      try { initializer(); } catch (error) { console.error("Portfolio interaction failed:", error); }
+    });
+  };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
   else run();
 })();
@@ -5980,4 +6205,446 @@ function setupFloatingPhysics() {
 
   new MutationObserver(labels).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   labels();
+})();
+
+
+// 31. RECONOCIMIENTOS · Estantería con físicas (bilingüe ES/EN).
+//     Usa el array `awards` (imágenes, títulos, descripciones y enlaces originales).
+
+(() => {
+  "use strict";
+
+  if (typeof awards === "undefined") return;
+
+  const COPY = {
+    es: {
+      title: "Estantería<br><em>con físicas.</em>",
+      intro: "Mis trofeos, ordenados en sus baldas. Si te apetece, agárralos y suéltalos: la gravedad hace el resto. Pulsa uno para leer su ficha.",
+      hintMouse: "Arrastra y suelta · clic para ver la ficha",
+      hintTouch: "Mantén pulsado para arrastrar · toca para ver la ficha",
+      reset: "Ordenar estantería",
+      empty: "Selecciona un trofeo para ver qué logré y en qué contexto.",
+      kicker: "Reconocimiento",
+      link: "Visitar página externa",
+    },
+    en: {
+      title: "Shelf<br><em>with physics.</em>",
+      intro: "My trophies, tidy on their shelves. If you feel like it, grab them and let go: gravity does the rest. Click one to read its card.",
+      hintMouse: "Drag and drop · click to see the card",
+      hintTouch: "Press and hold to drag · tap to see the card",
+      reset: "Tidy up shelf",
+      empty: "Select a trophy to see what I achieved and in what context.",
+      kicker: "Recognition",
+      link: "Visit external page",
+    },
+  };
+
+  const root = document.getElementById("awards");
+  const stage = document.getElementById("shelf-stage");
+  const detail = document.getElementById("shelf-detail");
+  const resetBtn = document.getElementById("shelf-reset");
+  if (!root || !stage || !detail || !resetBtn) return;
+  const planks = stage.querySelector(".shelf-planks");
+
+  /* Ajustes de la física */
+  const GAP = 18, PAD = 18;
+  const GRAVITY = 0.65;         // aceleración hacia abajo por frame
+  const AIR = 0.995;            // rozamiento horizontal en el aire
+  const GROUND_FRICTION = 0.86; // rozamiento al deslizar sobre una balda
+  const BOUNCE_Y = 0.22;        // rebote vertical al caer
+  const WALL_BOUNCE = 0.65;
+  const HIT_BOUNCE = 0.8;
+  const SLEEP_SPEED = 0.12;
+  const MAX_SPEED = 35;
+  const MAX_W = 330;          // ancho máximo de cada trofeo
+  const PLANK_SPACE = 46;     // hueco bajo cada balda (para los soportes)
+
+  const lang = () => (document.documentElement.lang === "en" ? "en" : "es");
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const T = (text) => (lang() === "en" ? (translations[text] || text) : text);
+  const descOf = (a) =>
+    lang() === "en" ? (awardDescriptions[a.title] || a.description) : a.description;
+
+  let W = 300, H = 290, stageW = 0, stageH = 0, zTop = 2, selected = null;
+  let plankTops = [];   // y de la cara superior de cada balda
+
+  const trophyHTML = (a) =>
+    `<img class="shelf-trophy-img" src="${esc(a.image)}" alt="" draggable="false" decoding="async">` +
+    `<span class="shelf-trophy-copy">` +
+      `<span class="shelf-trophy-title">${esc(T(a.title))}</span>` +
+      `<span class="shelf-trophy-event">${esc(T(a.category))}</span>` +
+    `</span>`;
+
+  const bodies = awards.map((a, i) => {
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "shelf-trophy";
+    el.setAttribute("aria-pressed", "false");
+    el.setAttribute("aria-controls", "shelf-detail");
+    el.innerHTML = trophyHTML(a);
+    stage.appendChild(el);
+    return { i, el, data: a, x: 0, y: 0, hx: 0, hy: 0, vx: 0, vy: 0,
+             awake: false, grounded: false, drag: false, moved: false, homing: null, lm: 0 };
+  });
+
+  /* Ficha inferior: misma información que tenía la ventana (imagen, título,
+     descripción y enlace), con la imagen al lado del texto. */
+  function renderDetail(b) {
+    const a = b.data, c = COPY[lang()];
+    detail.classList.add("has-award");
+    detail.innerHTML =
+      `<div class="shelf-detail-media">` +
+        `<img class="shelf-detail-image" src="${esc(a.image)}" alt="${esc(T(a.title))}">` +
+      `</div>` +
+      `<div class="shelf-detail-body">` +
+        `<p class="shelf-detail-kicker">${esc(c.kicker)}</p>` +
+        `<h3>${esc(T(a.title))}</h3>` +
+        `<p class="shelf-detail-category">${esc(T(a.category))}</p>` +
+        `<p class="shelf-detail-text">${esc(descOf(a))}</p>` +
+        `<a class="shelf-detail-link" href="${esc(a.url)}" target="_blank" rel="noreferrer">${esc(c.link)} ↗</a>` +
+      `</div>`;
+  }
+  function renderEmpty() {
+    detail.classList.remove("has-award");
+    detail.innerHTML = `<p class="shelf-detail-empty">${esc(COPY[lang()].empty)}</p>`;
+  }
+
+  /* Textos (se reaplican al cambiar de idioma, porque applyStaticLanguage
+     también escribe en #awards). */
+  function applyCopy() {
+    const c = COPY[lang()];
+    const h2 = root.querySelector("h2");
+    const intro = root.querySelector(".section-intro");
+    if (h2) h2.innerHTML = c.title;
+    if (intro) intro.textContent = c.intro;
+    const hm = root.querySelector(".shelf-hint-mouse");
+    const ht = root.querySelector(".shelf-hint-touch");
+    if (hm) hm.textContent = c.hintMouse;
+    if (ht) ht.textContent = c.hintTouch;
+    resetBtn.textContent = c.reset;
+    bodies.forEach((b) => { b.el.innerHTML = trophyHTML(b.data); });
+    if (selected) renderDetail(selected);
+    else renderEmpty();
+  }
+
+  /* Layout en reposo: pocas columnas = trofeos grandes y más estantes */
+  function layout() {
+    const w = stage.clientWidth;
+    if (!w || w === stageW) return;
+    stageW = w;
+
+    const cols = w >= 860 ? 3 : w >= 300 ? 2 : 1;
+    const small = w < 560;
+    W = Math.min(MAX_W, Math.floor((w - GAP * (cols + 1)) / cols));
+    H = Math.round((W - 16) * 2 / 3) + (small ? 84 : 96);
+    stage.style.setProperty("--tw", W + "px");
+    stage.style.setProperty("--th", H + "px");
+
+    const rows = Math.ceil(bodies.length / cols);
+    const rowH = H + PLANK_SPACE;
+    stageH = rows * rowH + PAD;
+    stage.style.height = stageH + "px";
+
+    planks.innerHTML = "";
+    plankTops = [];
+    for (let r = 0; r < rows; r++) {
+      const top = PAD + r * rowH + H;      // los trofeos se apoyan justo aquí
+      const p = document.createElement("div");
+      p.className = "shelf-plank";
+      p.style.top = top + "px";
+      planks.appendChild(p);
+      plankTops.push(top);
+    }
+
+    bodies.forEach((b, k) => {
+      const row = Math.floor(k / cols), idx = k % cols;
+      const inRow = Math.min(cols, bodies.length - row * cols);
+      const total = inRow * W + (inRow - 1) * GAP;
+      b.hx = (w - total) / 2 + idx * (W + GAP) + W / 2;
+      b.hy = PAD + row * rowH + H / 2;
+      if (!b.moved && !b.homing) { b.x = b.hx; b.y = b.hy; }
+      else { b.x = clamp(b.x, W / 2, w - W / 2); b.y = clamp(b.y, H / 2, stageH - H / 2); }
+    });
+    render();
+    if (bodies.some((b) => b.moved)) wake();   // por si alguna balda se ha movido
+  }
+
+  function render() {
+    bodies.forEach((b) => {
+      const tilt = (b.awake && !b.grounded) || b.drag ? clamp(b.vx * 1.4, -12, 12) : 0;
+      b.el.style.transform =
+        `translate3d(${(b.x - W / 2).toFixed(1)}px, ${(b.y - H / 2).toFixed(1)}px, 0) rotate(${tilt.toFixed(1)}deg)`;
+    });
+  }
+
+  /* Bucle: solo corre mientras algo se mueve */
+  let raf = 0, last = 0;
+  function wake() {
+    if (raf) return;
+    last = performance.now();
+    raf = requestAnimationFrame(tick);
+  }
+  function tick(now) {
+    const dt = Math.min(2, (now - last) / 16.667);
+    last = now;
+    step(dt, now);
+    render();
+    raf = bodies.some((b) => b.awake || b.drag || b.homing) ? requestAnimationFrame(tick) : 0;
+  }
+
+  /* Aterriza sobre una balda, el suelo u otro trofeo */
+  function land(b) {
+    if (b.vy > 3) b.vy = -b.vy * BOUNCE_Y;
+    else b.vy = 0;
+    b.grounded = true;
+  }
+
+  function step(dt, now) {
+    const hw = W / 2, hh = H / 2;
+
+    /* 1. Movimiento con gravedad */
+    bodies.forEach((b) => {
+      if (b.homing) {
+        const h = b.homing;
+        const p = clamp((now - h.t0) / h.dur, 0, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        b.x = h.fx + (b.hx - h.fx) * e;
+        b.y = h.fy + (b.hy - h.fy) * e;
+        b.grounded = false;
+        if (p >= 1) { b.homing = null; b.moved = false; b.awake = false; b.vx = b.vy = 0; }
+        return;
+      }
+      if (b.drag) {
+        if (now - b.lm > 50) { b.vx *= 0.5; b.vy *= 0.5; }
+        b.grounded = false;
+        return;
+      }
+      if (!b.awake) return;
+
+      b.grounded = false;
+      b.vy += GRAVITY * dt;
+      const prevBottom = b.y + hh;
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      b.vx *= Math.pow(AIR, dt);
+
+      /* paredes laterales y techo */
+      if (b.x < hw) { b.x = hw; b.vx = Math.abs(b.vx) * WALL_BOUNCE; }
+      else if (b.x > stageW - hw) { b.x = stageW - hw; b.vx = -Math.abs(b.vx) * WALL_BOUNCE; }
+      if (b.y < hh) { b.y = hh; b.vy = Math.abs(b.vy) * WALL_BOUNCE; }
+
+      /* baldas: solo se aterriza viniendo desde arriba (se pueden atravesar al subir) */
+      if (b.vy >= 0) {
+        const bottom = b.y + hh;
+        for (let k = 0; k < plankTops.length; k++) {
+          const top = plankTops[k];
+          if (prevBottom <= top + 1 && bottom >= top) { b.y = top - hh; land(b); break; }
+        }
+      }
+      /* suelo */
+      if (b.y > stageH - hh) { b.y = stageH - hh; land(b); }
+
+      if (b.grounded) b.vx *= Math.pow(GROUND_FRICTION, dt);
+    });
+
+    /* 2. Si a un trofeo en reposo le quitan el apoyo, vuelve a caer */
+    const supported = (b) => {
+      const bottom = b.y + hh;
+      if (bottom >= stageH - 1.5) return true;
+      for (let k = 0; k < plankTops.length; k++) {
+        if (Math.abs(bottom - plankTops[k]) <= 1.5) return true;
+      }
+      return bodies.some((o) => o !== b && !o.drag && !o.homing && (!o.awake || o.grounded) &&
+        Math.abs(o.x - b.x) < W - 2 && Math.abs(bottom - (o.y - hh)) <= 1.5);
+    };
+    bodies.forEach((b) => {
+      if (b.awake || b.drag || b.homing) return;
+      if (!supported(b)) { b.awake = true; b.grounded = false; b.moved = true; b.vx = b.vy = 0; }
+    });
+
+    /* 3. Colisiones entre trofeos (rectángulos) */
+    for (let i = 0; i < bodies.length; i++) {
+      for (let j = i + 1; j < bodies.length; j++) {
+        const a = bodies[i], b = bodies[j];
+        if (a.homing || b.homing) continue;
+        if (!a.awake && !a.drag && !b.awake && !b.drag) continue;
+
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const ox = W - Math.abs(dx), oy = H - Math.abs(dy);
+        if (ox <= 0 || oy <= 0) continue;
+
+        if (ox < oy) {
+          /* choque lateral: empujón */
+          const nx = dx < 0 ? -1 : 1;
+          const ia = a.drag ? 0 : 1, ib = b.drag ? 0 : 1;
+          const sum = ia + ib;
+          if (!sum) continue;
+          a.x -= nx * ox * (ia / sum);
+          b.x += nx * ox * (ib / sum);
+
+          const rv = (a.vx - b.vx) * nx;
+          if (rv > 0) {
+            const j2 = ((1 + HIT_BOUNCE) * rv) / sum;
+            a.vx -= j2 * ia * nx;
+            b.vx += j2 * ib * nx;
+          }
+          [a, b].forEach((o) => {
+            if (!o.drag) {
+              o.moved = true; o.awake = true;
+              o.x = clamp(o.x, hw, stageW - hw);
+              const s = Math.hypot(o.vx, o.vy);
+              if (s > MAX_SPEED) { o.vx *= MAX_SPEED / s; o.vy *= MAX_SPEED / s; }
+            }
+          });
+        } else if (!a.drag && !b.drag) {
+          /* uno cae sobre el otro: se apila */
+          const upper = a.y < b.y ? a : b;
+          const lower = upper === a ? b : a;
+          const lowerStatic = !lower.awake || lower.grounded;
+          if (lowerStatic) {
+            upper.y -= oy;
+          } else {
+            upper.y -= oy / 2;
+            lower.y += oy / 2;
+          }
+          const rv = upper.vy - lower.vy;
+          if (rv > 0) {
+            if (lowerStatic) upper.vy = rv > 3 ? -rv * BOUNCE_Y : 0;
+            else {
+              const j2 = (rv * (1 + BOUNCE_Y)) / 2;
+              upper.vy -= j2; lower.vy += j2;
+            }
+          }
+          upper.awake = true; upper.moved = true;
+          if (lowerStatic) upper.grounded = true;
+          else { lower.awake = true; lower.moved = true; }
+          [upper, lower].forEach((o) => {
+            o.y = clamp(o.y, hh, stageH - hh);
+            const s = Math.hypot(o.vx, o.vy);
+            if (s > MAX_SPEED) { o.vx *= MAX_SPEED / s; o.vy *= MAX_SPEED / s; }
+          });
+        }
+      }
+    }
+
+    /* 4. Dormir los que ya están quietos y apoyados */
+    bodies.forEach((b) => {
+      if (!b.awake || b.drag || b.homing) return;
+      if (b.grounded && Math.hypot(b.vx, b.vy) < SLEEP_SPEED) {
+        b.vx = b.vy = 0; b.awake = false;
+      }
+    });
+  }
+
+  function select(b) {
+    selected = b;
+    bodies.forEach((o) => o.el.setAttribute("aria-pressed", String(o === b)));
+    renderDetail(b);
+    detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  /* Interacción: ratón y táctil (en táctil, pulsación larga para arrastrar) */
+  let down = null;
+  const local = (e) => {
+    const r = stage.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+
+  bodies.forEach((b) => {
+    const el = b.el;
+
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button > 0 || down) return;
+      const p = local(e);
+      el._dragged = false;
+      down = { b, id: e.pointerId, sx: e.clientX, sy: e.clientY,
+               ox: p.x - b.x, oy: p.y - b.y,
+               touch: e.pointerType === "touch", armed: e.pointerType !== "touch",
+               started: false, timer: 0 };
+      if (down.touch) {
+        down.timer = setTimeout(() => {
+          if (!down) return;
+          down.armed = true;
+          el.classList.add("is-armed");
+          if (navigator.vibrate) navigator.vibrate(8);
+        }, 200);
+      }
+      try { el.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    el.addEventListener("pointermove", (e) => {
+      if (!down || down.b !== b || e.pointerId !== down.id) return;
+      if (!down.started) {
+        if (Math.hypot(e.clientX - down.sx, e.clientY - down.sy) < 6) return;
+        if (!down.armed) { clearTimeout(down.timer); down = null; return; }
+        down.started = true;
+        el._dragged = true;
+        b.drag = true; b.moved = true; b.homing = null; b.awake = false; b.grounded = false;
+        b.vx = b.vy = 0; b.lm = performance.now();
+        el.style.zIndex = ++zTop;
+        el.classList.add("is-dragging");
+        wake();
+      }
+      const p = local(e), now = performance.now();
+      const nx = clamp(p.x - down.ox, W / 2, stageW - W / 2);
+      const ny = clamp(p.y - down.oy, H / 2, stageH - H / 2);
+      const dt = Math.max(0.5, (now - b.lm) / 16.667);
+      b.vx += ((nx - b.x) / dt - b.vx) * 0.5;
+      b.vy += ((ny - b.y) / dt - b.vy) * 0.5;
+      b.x = nx; b.y = ny; b.lm = now;
+    });
+
+    const end = () => {
+      if (!down || down.b !== b) return;
+      clearTimeout(down.timer);
+      el.classList.remove("is-armed", "is-dragging");
+      if (down.started) {
+        if (performance.now() - b.lm > 70) { b.vx = 0; b.vy = 0; }
+        const s = Math.hypot(b.vx, b.vy);
+        if (s > MAX_SPEED) { b.vx *= MAX_SPEED / s; b.vy *= MAX_SPEED / s; }
+        b.drag = false;
+        b.awake = true;
+        b.grounded = false;
+        wake();
+      }
+      down = null;
+    };
+    el.addEventListener("pointerup", end);
+    el.addEventListener("pointercancel", end);
+
+    el.addEventListener("click", () => {
+      if (el._dragged) { el._dragged = false; return; }
+      select(b);
+    });
+  });
+
+  /* En táctil, una vez "armado" el arrastre, bloquea el scroll de la página */
+  stage.addEventListener("touchmove", (e) => {
+    if (down && down.touch && down.armed) e.preventDefault();
+  }, { passive: false });
+
+  /* Ordenar estantería: vuelta suave y escalonada */
+  resetBtn.addEventListener("click", () => {
+    const now = performance.now();
+    bodies.forEach((b, k) => {
+      if (b.drag) return;
+      if (!b.moved && !b.awake && !b.homing) return;
+      b.vx = b.vy = 0; b.awake = false;
+      b.homing = { fx: b.x, fy: b.y, t0: now + k * 40, dur: 600 };
+    });
+    wake();
+  });
+
+  /* Arranque, responsive e idioma */
+  if ("ResizeObserver" in window) new ResizeObserver(layout).observe(stage);
+  else window.addEventListener("resize", layout);
+  layout();
+
+  /* Se reaplica tras applyStaticLanguage (que cambia html[lang] en cada cambio de idioma). */
+  new MutationObserver(applyCopy).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  const init = () => { applyCopy(); layout(); };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 })();

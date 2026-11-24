@@ -12,7 +12,7 @@
     <title>Pablo · Game Design / Dev</title>
 
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="styles.css?v=51" />
+    <link rel="stylesheet" href="styles.css?v=63" />
     <noscript>
       <style>
         .cs-reveal {
@@ -427,20 +427,36 @@
           <div class="documents-grid" id="documents-grid"></div>
         </section>
 
-        <!-- RECONOCIMIENTOS: tarjetas dinámicas y detalle modal. -->
-        <section class="section awards-section" id="awards">
+        <!-- RECONOCIMIENTOS: estantería con físicas (los trofeos se generan desde el bloque de script.js). -->
+        <section class="section shelf-section" id="awards" aria-labelledby="shelf-title">
           <div class="section-heading">
             <div>
               <p class="eyebrow">Reconocimientos</p>
-              <h2>Trabajo que<br /><em>deja señal.</em></h2>
+              <h2 id="shelf-title">Estantería<br /><em>con físicas.</em></h2>
             </div>
             <p class="section-intro">
-              Son momentos y proyectos que me han dado una excusa para seguir
-              haciendo cosas. Pulsa una tarjeta para conocer el contexto y ver
-              la referencia externa.
+              Mis trofeos, ordenados en sus baldas. Si te apetece, agárralos y
+              suéltalos: la gravedad hace el resto. Pulsa uno para leer su ficha.
             </p>
           </div>
-          <div class="awards-grid" id="awards-grid"></div>
+
+          <div class="shelf-cabinet" id="shelf-cabinet">
+            <div class="shelf-stage" id="shelf-stage">
+              <div class="shelf-planks" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="shelf-toolbar">
+            <p class="shelf-hint">
+              <span class="shelf-hint-mouse">Arrastra para lanzar · clic para ver la ficha</span>
+              <span class="shelf-hint-touch">Mantén pulsado para arrastrar · toca para ver la ficha</span>
+            </p>
+            <button type="button" class="shelf-reset" id="shelf-reset">Ordenar estantería</button>
+          </div>
+
+          <div class="shelf-detail" id="shelf-detail" aria-live="polite">
+            <p class="shelf-detail-empty">Selecciona un trofeo para ver qué logré y en qué contexto.</p>
+          </div>
         </section>
 
         <!-- EXPERIENCIA: recorrido cronológico renderizado por JavaScript. -->
@@ -514,6 +530,6 @@
     </div>
 
       <!-- Comportamiento común: renderizado, idioma y controles. -->
-    <script src="script.js?v=46"></script>
+    <script src="script.js?v=56"></script>
   </body>
 </html>
