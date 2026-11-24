@@ -7,17 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Portfolio de Pablo Menéndez-Morán, diseñador y desarrollador de videojuegos."
+      content="Portfolio de Pablo Menéndez-Morán, diseñador de videojuegos especializado en narrativa y sistemas."
     />
     <title>Pablo · Game Design / Dev</title>
 
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=51" />
+    <noscript>
+      <style>
+        .cs-reveal {
+          opacity: 1 !important;
+          transform: none !important;
+          clip-path: none !important;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
       <!-- ESTRUCTURA GLOBAL: indicador de lectura y contenedor del sitio. -->
     <div class="site-shell" id="top">
-      <div class="scroll-progress" aria-hidden="true"></div>
 
       <!-- CABECERA: marca, selector de idioma y navegación adaptable. -->
       <header class="topbar">
@@ -55,8 +63,8 @@
           aria-label="Navegación principal"
         >
           <a href="#about">Sobre mí</a>
-          <a href="#skills">Habilidades</a>
           <a href="#projects">Proyectos</a>
+          <a href="#skills">Habilidades</a>
           <a href="#documents">Investigación</a>
           <a href="#awards">Reconocimientos</a>
           <a href="#experience">Experiencia</a>
@@ -93,17 +101,17 @@
           </div>
 
           <div class="hero-copy">
-            <p class="eyebrow">Diseñador y desarrollador de videojuegos</p>
+            <p class="eyebrow">Diseñador de videojuegos · narrativa y sistemas</p>
             <h1>
               Diseñar es<br /><em>entender</em><br />más allá de lo que se ve.
             </h1>
             <p class="hero-lede">
-              Soy Pablo Menéndez-Morán. Me gusta desmontar una idea, probarla
-              cuanto antes y descubrir qué merece quedarse cuando el jugador la
-              tiene delante.
+              Diseño experiencias jugables centradas en la narrativa y los
+              sistemas. Convierto ideas en prototipos y las refino mediante
+              pruebas y feedback.
             </p>
             <a class="button button-primary" href="#projects"
-              >Ver mis proyectos →</a
+              >Ver caso destacado →</a
             >
             <span class="hero-scroll-cue" aria-hidden="true"
               >Explora el proceso ↓</span
@@ -117,50 +125,213 @@
 
         </section>
 
-        <!-- PERFIL: biografía, estadísticas y método de trabajo. -->
-        <section class="section about-section" id="about">
-          <div class="section-heading">
-            <div>
-              <figure class="about-profile-photo about-profile-photo-heading">
-                <img
-                  src="/manus-storage/skill-art_a485fde1.png"
-                  alt="Retrato provisional de Pablo"
-                />
-              </figure>
-              <h2>Diseñar es<br /><em>hacer preguntas.</em></h2>
+        <!-- PERFIL: selector de personaje, afinidades y contadores integrados. -->
+        <section
+          class="section character-select"
+          id="about"
+          aria-labelledby="about-title"
+          data-focus="narrative"
+        >
+          <div class="cs-backdrop" aria-hidden="true">
+            <span class="cs-glow cs-glow--coral"></span>
+            <span class="cs-glow cs-glow--lime"></span>
+            <span class="cs-grid"></span>
+            <span class="cs-spot"></span>
+            <span class="cs-grain"></span>
+          </div>
+          <div class="cs-shell">
+            <div class="cs-topline">
+              <span class="cs-topline-tag"><i aria-hidden="true"></i>Character select</span>
+              <span class="cs-topline-rule" aria-hidden="true"></span>
             </div>
-            <div class="section-intro">
-              <p class="eyebrow">Sobre mí</p>
-              <p>
-                Me muevo entre el diseño, el arte y el código porque muchas
-                veces una buena idea no se entiende hasta que se puede tocar.
-                Ahí es donde más disfruto: convirtiendo preguntas en prototipos.
-              </p>
-              <p>
-                Todavía estoy construyendo mi camino, así que intento no
-                enamorarme demasiado de la primera versión. Prefiero aprender,
-                iterar y trabajar con gente que quiera hacer juegos con una voz
-                propia.
-              </p>
-              <div class="about-stats-panel">
-                <div class="about-stats-wrap">
-                  <p class="eyebrow">Lo que he construido</p>
-                  <div
-                    id="about-stats"
-                    class="about-stats"
-                    aria-live="polite"
-                  ></div>
+            <div class="cs-stage">
+              <div class="cs-portrait-col cs-reveal">
+                <figure class="cs-portrait is-missing" id="cs-portrait">
+                  <!-- Añade el src de tu retrato aquí cuando quieras incorporarlo. -->
+                  <img
+                    class="cs-portrait-img"
+                    alt="Retrato de Pablo Menéndez-Morán"
+                    width="640"
+                    height="800"
+                  />
+                  <span class="cs-portrait-fallback" aria-hidden="true">
+                    <svg viewBox="0 0 120 140" focusable="false">
+                      <circle cx="60" cy="46" r="23"></circle>
+                      <path d="M19 140c0-25 18-45 41-45s41 20 41 45"></path>
+                    </svg>
+                    <b>PMM</b>
+                    <small>Portrait / offline</small>
+                  </span>
+                  <span class="cs-portrait-tint" aria-hidden="true"></span>
+                  <span class="cs-portrait-scanlines" aria-hidden="true"></span>
+                  <span class="cs-portrait-scan" aria-hidden="true"></span>
+                  <span class="cs-corner cs-corner--tl" aria-hidden="true"></span>
+                  <span class="cs-corner cs-corner--tr" aria-hidden="true"></span>
+                  <span class="cs-corner cs-corner--bl" aria-hidden="true"></span>
+                  <span class="cs-corner cs-corner--br" aria-hidden="true"></span>
+                  <span class="cs-portrait-tag cs-portrait-tag--top" aria-hidden="true"><i></i>Live portrait</span>
+                  <figcaption class="cs-id">
+                    <p class="cs-id-kicker">Player profile</p>
+                    <h2 class="cs-name" id="about-title">Pablo <br />Menéndez-Morán</h2>
+                    <p class="cs-role about-character-role-copy">Diseñador de videojuegos · narrativa y sistemas</p>
+                    <p class="cs-status">
+                      <i aria-hidden="true"></i>
+                      <span class="about-status-copy">Disponible para proyectos</span>
+                    </p>
+                  </figcaption>
+                </figure>
+              </div>
+              <div class="cs-dossier cs-reveal">
+                <div class="cs-intro">
+                  <p class="eyebrow">Sobre mí</p>
+                  <p class="cs-quote">Diseñar es <em>hacer preguntas.</em></p>
+                </div>
+                <div class="cs-bio">
+                  <p class="about-bio-copy">
+                    Me muevo entre el diseño, el arte y el código porque muchas veces una buena idea no se entiende hasta que se puede tocar. Ahí es donde más disfruto: convirtiendo preguntas en prototipos.
+                  </p>
+                  <p class="about-bio-copy">
+                    Mi forma de trabajar es empezar por una pregunta, construir algo pequeño, probarlo con alguien y ajustar según el feedback. Me gusta colaborar con equipos que quieran hacer juegos con una voz propia.
+                  </p>
+                </div>
+                <div class="cs-focus">
+                  <div class="cs-focus-head">
+                    <span class="cs-label">Elige tu enfoque</span>
+                  </div>
+                  <div class="cs-focus-list" id="about-focus" role="radiogroup" aria-label="Enfoque de diseño"></div>
+                  <p class="cs-focus-desc" id="about-focus-desc" aria-live="polite"></p>
+                </div>
+                <div class="cs-block">
+                  <div class="cs-block-head">
+                    <span class="cs-label about-attributes-label">Afinidad</span>
+                    <span class="cs-block-meta">/ 10</span>
+                  </div>
+                  <div class="cs-attr-grid" id="about-attributes" role="group" aria-label="Atributos principales"></div>
+                </div>
+                <div class="cs-block cs-block--passives">
+                  <div class="cs-block-head">
+                    <span class="cs-label about-passives-label">Habilidades pasivas</span>
+                    <span class="cs-block-meta">Always active</span>
+                  </div>
+                  <div class="cs-passives" id="about-passives"></div>
                 </div>
               </div>
             </div>
+            <div class="cs-hud cs-reveal">
+              <div class="cs-stats" id="about-stats"></div>
+            </div>
           </div>
-          <div class="about-callout">
-            <p>
-              <strong>Mi forma de trabajar:</strong> empiezo por la pregunta,
-              construyo algo pequeño, lo pongo en manos de alguien y escucho lo
-              que el juego me devuelve.
+        </section>
+
+        <!-- PROCESO: ventanas con animaciones simples de cada parte del proceso. -->
+        <section class="section process-section" id="process" aria-labelledby="process-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow" data-t="eyebrow">Proceso</p>
+              <h2 id="process-title" data-t="title">Cómo diseño,<br /><em>paso a paso.</em></h2>
+            </div>
+            <p class="section-intro" data-t="intro"></p>
+          </div>
+          <div class="process-grid">
+            <article class="ed-win">
+              <header class="ed-win-bar"><span class="ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ed-win-title" data-t="w1"></span><em data-t="w1tag"></em></header>
+              <div class="ed-win-body">
+                <svg viewBox="0 0 300 150" role="img" data-alt="w1" aria-label="">
+                  <rect x="30" y="22" width="240" height="56" rx="6" fill="#19232d" stroke="#b8d96b"/>
+                  <rect class="q-type" x="46" y="42" width="150" height="8" rx="4" fill="#f7f3ec"/>
+                  <rect class="q-type" x="46" y="58" width="100" height="6" rx="3" fill="#b9b8b3"/>
+                  <text class="q-mark" x="238" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#ff6b4a" font-family="Space Grotesk, sans-serif">?</text>
+                  <rect class="q-chip" x="30" y="100" width="70" height="26" rx="13" fill="none" stroke="#b9b8b3"/>
+                  <rect class="q-chip" style="animation-delay:.25s" x="115" y="100" width="70" height="26" rx="13" fill="none" stroke="#b9b8b3"/>
+                  <rect class="q-chip" style="animation-delay:.5s" x="200" y="100" width="70" height="26" rx="13" fill="none" stroke="#b8d96b"/>
+                </svg>
+                <p class="ed-note" data-t="w1d"></p>
+              </div>
+            </article>
+            <article class="ed-win">
+              <header class="ed-win-bar"><span class="ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ed-win-title" data-t="w2"></span><em data-t="w2tag"></em></header>
+              <div class="ed-win-body">
+                <svg viewBox="0 0 300 150" role="img" data-alt="w2" aria-label="">
+                  <g fill="#b9b8b3"><rect class="p-block" x="20" y="108" width="90" height="22"/><rect class="p-block" style="animation-delay:.3s" x="140" y="108" width="50" height="22"/><rect class="p-block" style="animation-delay:.6s" x="220" y="108" width="60" height="22"/></g>
+                  <g class="p-run"><g class="p-hop"><rect x="32" y="92" width="16" height="16" fill="#ff6b4a"/></g></g>
+                </svg>
+                <p class="ed-note" data-t="w2d"></p>
+              </div>
+            </article>
+            <article class="ed-win">
+              <header class="ed-win-bar"><span class="ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ed-win-title" data-t="w3"></span><em data-t="w3tag"></em></header>
+              <div class="ed-win-body">
+                <svg viewBox="0 0 300 150" role="img" data-alt="w3" aria-label="">
+                  <rect x="20" y="108" width="260" height="22" fill="#b9b8b3"/>
+                  <rect x="190" y="84" width="22" height="24" fill="#ff6b4a"/>
+                  <rect class="t-run" x="26" y="92" width="16" height="16" fill="#b8d96b"/>
+                  <g class="t-warn"><circle cx="201" cy="66" r="11" fill="#ff6b4a"/><text x="201" y="71" text-anchor="middle" font-size="14" font-weight="700" fill="#111820" font-family="Space Grotesk, sans-serif">!</text></g>
+                  <ellipse cx="50" cy="38" rx="22" ry="12" fill="none" stroke="#b9b8b3"/>
+                  <circle class="t-pupil" cx="50" cy="38" r="5" fill="#b8d96b"/>
+                  <g fill="#b9b8b3"><rect class="n-line" x="160" y="22" width="110" height="4" rx="2"/><rect class="n-line" style="animation-delay:.3s" x="160" y="34" width="80" height="4" rx="2"/><rect class="n-line" style="animation-delay:.6s" x="160" y="46" width="95" height="4" rx="2"/></g>
+                </svg>
+                <p class="ed-note" data-t="w3d"></p>
+              </div>
+            </article>
+            <article class="ed-win">
+              <header class="ed-win-bar"><span class="ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ed-win-title" data-t="w4"></span><em data-t="w4tag"></em></header>
+              <div class="ed-win-body">
+                <svg viewBox="0 0 300 150" role="img" data-alt="w4" aria-label="">
+                  <rect x="40" y="36" width="220" height="6" rx="3" fill="#33414d"/>
+                  <circle class="a-knob" cx="60" cy="39" r="10" fill="#ff6b4a"/>
+                  <g fill="#b9b8b3"><rect x="20" y="104" width="110" height="22"/><rect class="a-right" x="170" y="104" width="110" height="22"/></g>
+                  <rect x="40" y="88" width="16" height="16" fill="#b8d96b"/>
+                </svg>
+                <p class="ed-note" data-t="w4d"></p>
+              </div>
+            </article>
+            <article class="ed-win">
+              <header class="ed-win-bar"><span class="ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ed-win-title" data-t="w5"></span><em data-t="w5tag"></em></header>
+              <div class="ed-win-body">
+                <svg viewBox="0 0 380 230" role="img" data-alt="w5" aria-label="">
+                  <g fill="#111820" stroke="#b9b8b3" stroke-width="1.5"><rect x="10" y="20" width="80" height="60"/><rect x="130" y="20" width="90" height="50"/><rect x="265" y="30" width="105" height="75"/><rect x="60" y="115" width="110" height="65"/><rect x="215" y="135" width="70" height="45"/></g>
+                  <path class="draw" pathLength="1" d="M50 50 L175 45 L115 147 L250 157 L300 70" fill="none" stroke="#ff6b4a" stroke-width="2"/>
+                  <circle class="l-pt" cx="50" cy="50" r="7" fill="#b8d96b"/><circle class="l-pt" style="animation-delay:.6s" cx="175" cy="45" r="7" fill="#ff6b4a"/><circle class="l-pt" style="animation-delay:1.2s" cx="115" cy="147" r="7" fill="#f7f3ec"/><rect class="l-pt" style="animation-delay:1.8s" x="293" y="63" width="14" height="14" fill="#ff6b4a"/>
+                  <g fill="#f7f3ec" font-size="10" font-family="IBM Plex Mono, monospace"><text x="22" y="95" data-t="start"></text><text x="150" y="88" data-t="check"></text><text x="75" y="173" data-t="key"></text><text x="285" y="122" data-t="boss"></text></g>
+                  <defs><linearGradient id="ed-diff-grad" gradientUnits="userSpaceOnUse" x1="10" y1="0" x2="370" y2="0"><stop offset="0" stop-color="#b8d96b"/><stop offset=".62" stop-color="#b8d96b"/><stop offset=".86" stop-color="#ff6b4a"/><stop offset="1" stop-color="#ff6b4a"/></linearGradient></defs><g class="l-player"><circle r="5" fill="#b8d96b" stroke="#111820" stroke-width="1.5"/></g><polyline class="draw" pathLength="1" points="10,218 50,212 100,200 150,214 210,196 260,208 320,188 370,192" fill="none" stroke="url(#ed-diff-grad)" stroke-width="2"/>
+                </svg>
+                <p class="ed-note" data-t="w5d"></p>
+              </div>
+            </article>
+            <article class="ed-win">
+              <header class="ed-win-bar"><span class="ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ed-win-title" data-t="w6"></span><em data-t="w6tag"></em></header>
+              <div class="ed-win-body">
+                <svg viewBox="0 0 380 250" role="img" data-alt="w6" aria-label="">
+                  <path d="M190 40 V70 M190 100 L95 135 M190 100 L285 135 M95 165 V200 M285 165 V200" stroke="#b9b8b3" stroke-width="1.5" fill="none"/>
+                  <g font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle" fill="#f7f3ec">
+                    <rect class="g-node" x="130" y="10" width="120" height="30" rx="4" fill="#111820" stroke="#b8d96b"/><text x="190" y="30" data-t="n0"></text>
+                    <rect class="g-node" style="animation-delay:.9s" x="120" y="70" width="140" height="30" rx="4" fill="#111820" stroke="#ff6b4a"/><text x="190" y="90" data-t="n1"></text>
+                    <rect class="g-node" style="animation-delay:1.8s" x="35" y="135" width="120" height="30" rx="4" fill="#111820" stroke="#b9b8b3"/><text x="95" y="155" data-t="n2"></text>
+                    <rect class="g-node" style="animation-delay:1.8s" x="225" y="135" width="120" height="30" rx="4" fill="#111820" stroke="#b9b8b3"/><text x="285" y="155" data-t="n3"></text>
+                    <rect class="g-node" style="animation-delay:2.7s" x="35" y="200" width="120" height="30" rx="4" fill="#111820" stroke="#b8d96b"/><text x="95" y="220" data-t="n4"></text>
+                    <rect class="g-node" style="animation-delay:2.7s" x="225" y="200" width="120" height="30" rx="4" fill="#111820" stroke="#b8d96b"/><text x="285" y="220" data-t="n5"></text>
+                  </g>
+                </svg>
+                <p class="ed-note" data-t="w6d"></p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- PROYECTOS: tarjetas enlazadas a fichas individuales. -->
+        <section class="section projects-section" id="projects">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Proyectos</p>
+              <h2>Ideas hechas<br /><em>jugables.</em></h2>
+            </div>
+            <p class="section-intro">
+              Estos casos muestran cómo convierto ideas en experiencias
+              jugables: el contexto, las decisiones de diseño y mi aportación
+              en cada proyecto.
             </p>
           </div>
+          <div class="projects-list" id="projects-list"></div>
         </section>
 
         <!-- HABILIDADES: el contenido de tarjetas se genera desde script.js. -->
@@ -180,22 +351,6 @@
           <div class="skills-list" id="skills-list"></div>
         </section>
 
-        <!-- PROYECTOS: tarjetas enlazadas a fichas individuales. -->
-        <section class="section projects-section" id="projects">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Proyectos</p>
-              <h2>Ideas hechas<br /><em>jugables.</em></h2>
-            </div>
-            <p class="section-intro">
-              Aquí quiero enseñar cómo pienso, no solo qué he terminado. Cada
-              ficha está preparada para contar una idea, sus pruebas, sus
-              problemas y lo que aprendí por el camino.
-            </p>
-          </div>
-          <div class="projects-list" id="projects-list"></div>
-        </section>
-
         <!-- INVESTIGACIÓN: documentos, filtros y contador del archivo. -->
         <section
           class="section documents-section archive-section"
@@ -208,29 +363,29 @@
             </div>
             <div class="section-intro">
               <p>
-                Una biblioteca de GDDs, análisis y documentos de proceso que
-                explica cómo paso de una intuición a una experiencia jugable.
+                Un único nivel conectado: cada sala reúne documentos,
+                experimentos y pruebas de diseño en un mismo recorrido.
               </p>
               <div
                 class="documents-stats"
-                aria-label="Resumen de documentación"
+                aria-label="Resumen del mapa"
               >
-                <span><b id="documents-count">00</b><small>piezas</small></span>
+                <span><b id="documents-count">00</b><small>salas</small></span>
+                <span><b>01</b><small>nivel</small></span>
                 <span><b>ES / EN</b><small>idiomas</small></span>
-                <span><b>01</b><small>archivo vivo</small></span>
               </div>
               <p class="documents-definition">
-                <strong>Archivo vivo:</strong> una colección que puede crecer y
-                actualizarse con cada nuevo proyecto, prueba o documento.
+                <strong>Recorrido:</strong> explora el nivel de sala en sala.
+                Cada puerta abre su ficha con más detalles.
               </p>
             </div>
           </div>
-          <div class="documents-toolbar" aria-label="Filtrar documentación">
-            <span class="documents-toolbar-label">Explorar archivo</span>
+          <div class="documents-toolbar" aria-label="Puertas del mapa">
+            <span class="documents-toolbar-label">Elige una puerta</span>
             <div
               class="document-filters"
               role="group"
-              aria-label="Categorías de documentación"
+              aria-label="Puertas del mapa"
             >
               <button
                 type="button"
@@ -359,6 +514,6 @@
     </div>
 
       <!-- Comportamiento común: renderizado, idioma y controles. -->
-    <script src="script.js"></script>
+    <script src="script.js?v=46"></script>
   </body>
 </html>
