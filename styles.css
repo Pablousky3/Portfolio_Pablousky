@@ -11459,28 +11459,41 @@ body.pmm-shop-open {
     padding-top: 42px;
     padding-bottom: 48px;
   }
-  .sp-shell {
+  .savepoint .sp-shell {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 34px;
+    gap: clamp(26px, 7vw, 34px);
   }
-  .sp-info,
-  .sp-card {
+  .savepoint .sp-info,
+  .savepoint .sp-card {
     width: 100%;
     max-width: none;
   }
-  .sp-info {
+  .savepoint .sp-info {
     order: 1;
+    padding: 0;
+    background: transparent;
   }
-  .sp-card {
+  .savepoint .sp-card {
     order: 2;
+    padding: clamp(22px, 5vw, 30px) clamp(16px, 5vw, 26px);
   }
   .savepoint h2 {
     font-size: clamp(2.8rem, 13vw, 4.5rem);
   }
-  .sp-lead {
+  .savepoint .sp-lead {
     max-width: 48ch;
+  }
+  .savepoint .sp-links {
+    width: 100%;
+    max-width: none;
+  }
+  .savepoint .sp-field input,
+  .savepoint .sp-field textarea,
+  .savepoint .sp-btn {
+    width: 100%;
+    max-width: none;
   }
 }
 @media (max-width: 480px) {
@@ -11513,12 +11526,7 @@ body.pmm-shop-open {
   .sp-mail-addr {
     font-size: 0.86rem;
   }
-  .sp-mail-row .sp-btn {
-    align-self: flex-start;
-  }
-  .sp-card {
-    padding: 22px 18px;
-  }
+  .savepoint .sp-card { padding: 22px 18px; }
   .sp-field input,
   .sp-field textarea {
     font-size: 16px;

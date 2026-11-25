@@ -7033,6 +7033,7 @@ function setupFloatingPhysics() {
       rateWait: (m) => `Ya enviaste un mensaje hace poco. Podrás enviar otro en ${m} min.`,
       rateDay: 'Has alcanzado el límite de mensajes de hoy. Inténtalo mañana o escribe directamente al correo.',
       errNetwork: (e) => `No se pudo enviar. Prueba de nuevo o escríbeme a ${e}.`,
+      cvPrompt: 'El CV se abrirá en otra pestaña. ¿Quieres continuar?',
       doneTitle: 'Partida guardada', doneSub: 'Hoguera encendida',
       doneText: 'Mensaje enviado. Te responderé lo antes posible.',
       doneAgain: 'Escribir otro mensaje',
@@ -7055,6 +7056,7 @@ function setupFloatingPhysics() {
       rateWait: (m) => `You sent a message recently. You can send another in ${m} min.`,
       rateDay: 'You have reached the daily message limit. Try again tomorrow or write to the email directly.',
       errNetwork: (e) => `Could not send. Try again or write to me at ${e}.`,
+      cvPrompt: 'The CV will open in another tab. Do you want to continue?',
       doneTitle: 'Game saved', doneSub: 'Bonfire lit',
       doneText: 'Message sent. I will get back to you as soon as I can.',
       doneAgain: 'Write another message',
@@ -7065,7 +7067,7 @@ function setupFloatingPhysics() {
   const form = q('#sp-form'), done = q('#sp-done'), errorBox = q('#sp-error');
   const submitBtn = q('#sp-submit'), statusText = q('#sp-status-text');
   const copyFeedback = q('#sp-copy-feedback');
-  const mailLink = q('#sp-mail-addr'), wideBanner = q('#sp-banner-wide');
+  const mailLink = q('#sp-mail-addr'), cvLink = q('[data-cv-link]'), wideBanner = q('#sp-banner-wide');
   const fName = q('#sp-name'), fEmail = q('#sp-email'), fMsg = q('#sp-message'), fHoney = q('.sp-hp');
 
   const STATE_KEY = { idle: 'sIdle', active: 'sActive', sending: 'sSending', saved: 'sSaved', error: 'sError' };
@@ -7132,6 +7134,10 @@ function setupFloatingPhysics() {
   mailLink.addEventListener('click', (event) => {
     event.preventDefault();
     copyEmail();
+  });
+
+  cvLink?.addEventListener('click', (event) => {
+    if (!window.confirm(t().cvPrompt)) event.preventDefault();
   });
 
   section.querySelectorAll('.sp-links a[aria-disabled="true"]').forEach((a) =>
@@ -7245,7 +7251,7 @@ function setupFloatingPhysics() {
           _honey: '',
         }),
         credentials: 'omit',
-        referrerPolicy: 'no-referrer',
+        referrerPolicy: 'strict-origin-when-cross-origin', // FormSubmit necesita el Referer
         cache: 'no-store',
         signal: controller.signal,
       });
