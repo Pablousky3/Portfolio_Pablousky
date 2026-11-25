@@ -111,6 +111,7 @@ window.pmmSetMascot = (focusId) => {
   }
   document.querySelectorAll(".pmm-pawn .pmm-idle").forEach((img) => { img.src = currentMascot.pawnIdle; });
   document.querySelectorAll(".pmm-pawn .pmm-run").forEach((img) => { img.src = currentMascot.pawnRun; });
+  window.dispatchEvent(new CustomEvent("pmm:mascot-changed"));
 };
 
 // 03. UTILIDADES: normalización de listas y registro de eventos.
@@ -2176,7 +2177,6 @@ function renderDocumentRoom(item, documentIndex, roomIndex, isTestingRoom) {
   const roomType = isTestingRoom
     ? english ? "PLAYTEST ROOM" : "SALA DE PRUEBAS"
     : english ? "PLANNING ROOM" : "SALA DE PLANIFICACIÓN";
-  const openLabel = english ? "Open room" : "Abrir sala";
   const missingPreview = english ? "PREVIEW NOT AVAILABLE" : "VISTA PREVIA NO DISPONIBLE";
 
   return `
@@ -2201,9 +2201,6 @@ function renderDocumentRoom(item, documentIndex, roomIndex, isTestingRoom) {
           <span>${tr(item.project)}</span>
           <span>${item.languages}</span>
         </div>
-        <button type="button" class="document-open" data-document-open="${documentIndex}" aria-label="${openLabel}: ${tr(item.title)}">
-          <span>${openLabel}</span><span aria-hidden="true">↗</span>
-        </button>
       </div>
     </article>`;
 }
@@ -2498,7 +2495,7 @@ function setupMobileScrollHover() {
   }
 
   const cards = document.querySelectorAll(
-    ".skill-card, .project-card:not(.game-box-card), .game-box-card .gbc-stage, .document-card, .award-card, .experience-card",
+    ".project-card:not(.game-box-card), .game-box-card .gbc-stage, .document-card, .award-card, .experience-card",
   );
   if (!cards.length) return;
 
@@ -3404,7 +3401,7 @@ function renderProjects() {
           : cardImage
             ? `<img class="project-card-media" src="${cardImage}" alt="${projectText(project.title)}"><span class="project-media-badge">IMAGE / COVER</span>`
             : "";
-      const isPlaceholder = (value) => /^(añadir|add |explica |explain |presenta |introduce )/i.test((value || "").trim());
+      const isPlaceholder = (value) => /^(añadir|add |explica |explain |presenta |introduce |contenido por completar|content to complete)/i.test((value || "").trim());
       const statusText = projectText(project.status);
       const statusLabel = statusText && !isPlaceholder(statusText)
         ? `<span class="project-status-pill">${statusText}</span>`
@@ -3424,10 +3421,10 @@ function renderProjects() {
         /^(género|genre)$/i.test(projectText(detail.label)),
       );
       const projectFacts = [
+        { label: "Estado", value: statusText },
         { label: "Año", value: projectText(project.date) },
         { label: "Formato", value: projectText(project.type) },
         { label: "Género", value: projectText(genreDetail?.value) },
-        { label: "Estado", value: statusText },
         { label: "Herramientas", value: projectText(project.tools) },
         { label: "Equipo", value: projectText(project.team?.name) },
       ].filter(({ value }) => value && !isPlaceholder(value));
@@ -3464,8 +3461,8 @@ function renderProjects() {
           </a>
           <span class="gbc-plank" aria-hidden="true"></span>
           <div class="project-content${projectFactsMarkup || role || description ? "" : " is-case-empty"}" role="group" aria-label="${tr("Datos del proyecto")}">
-            ${projectFactsMarkup ? `<div class="project-facts">${projectFactsMarkup}</div>` : ""}
             ${role}
+            ${projectFactsMarkup ? `<div class="project-facts">${projectFactsMarkup}</div>` : ""}
             ${description}
           </div>
         </article>`;
@@ -4507,28 +4504,20 @@ function setupFloatingPhysics() {
     const shopExpanded = q("#pmm-shop-panel")?.hidden === false;
     const shopClasses = ["pmm-chip", "pmm-shop-toggle", bump === "c" ? "is-bump" : "", earnedTypes.has("c") ? "is-earned" : ""].filter(Boolean).join(" ");
     const trophyClasses = ["pmm-chip", "pmm-trophy-btn", complete ? "is-complete" : "", bump === "t" ? "is-bump" : "", earnedTypes.has("t") ? "is-earned" : ""].filter(Boolean).join(" ");
+    const trophyMarkup = complete
+      ? `<button type="button" class="${trophyClasses}" aria-label="${t(`Trofeos: ${n} de ${total}. Pulsa para celebrar.`, `Trophies: ${n} of ${total}. Activate to celebrate.`)}" title="${unlockedNames}">🏆 ${n}/${total}</button>`
+      : "";
     hud.innerHTML =
-      `<button type="button" id="pmm-shop-toggle" class="${shopClasses}" title="${t("Abrir tienda", "Open shop")}" aria-label="${t("Abrir tienda. Monedas:", "Open shop. Coins:")} ${coins}" aria-controls="pmm-shop-panel" aria-expanded="${shopExpanded}"><svg class="pmm-shop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v10h16V10M3 10l2-6h14l2 6M3 10c0 1.4 1 2.5 2.2 2.5S7.5 11.4 7.5 10c0 1.4.9 2.5 2.25 2.5S12 11.4 12 10c0 1.4.9 2.5 2.25 2.5S16.5 11.4 16.5 10c0 1.4.9 2.5 2.25 2.5S21 11.4 21 10M8 20v-5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="pmm-coins-value" aria-live="polite">${coins}</span></button>` +
-      `<button type="button" class="${trophyClasses}" aria-label="${t(`Trofeos: ${n} de ${total}. Pulsa para ver el progreso.`, `Trophies: ${n} of ${total}. Activate to view progress.`)}" title="${unlockedNames}">🏆 ${n}/${total}</button>`;
+      `<button type="button" id="pmm-shop-toggle" class="${shopClasses}" title="${t("Abrir tienda", "Open shop")}" aria-label="${t("Abrir tienda. Monedas:", "Open shop. Coins:")} ${coins}" aria-controls="pmm-shop-panel" aria-expanded="${shopExpanded}"><svg class="pmm-shop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v10h16V10M3 10l2-6h14l2 6M3 10c0 1.4 1 2.5 2.2 2.5S7.5 11.4 7.5 10c0 1.4.9 2.5 2.25 2.5S12 11.4 12 10c0 1.4.9 2.5 2.25 2.5S16.5 11.4 16.5 10c0 1.4 1 2.5 2.2 2.5S21 11.4 21 10M8 20v-5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="pmm-coins-value" aria-live="polite">${coins}</span></button>` +
+      trophyMarkup;
 
     q(".pmm-shop-toggle", hud)?.addEventListener("click", () => {
       window.dispatchEvent(new Event("pmm:open-shop"));
     });
     const trophyBtn = q(".pmm-trophy-btn", hud);
     trophyBtn?.addEventListener("click", () => {
-      // El trofeo es el control de celebración: funciona aunque aún falten trofeos.
-      confetti(complete ? 45 : 24);
-      toast(
-        complete
-          ? t(
-              "🎉 ¡Todos los trofeos desbloqueados!",
-              "🎉 All trophies unlocked!"
-            )
-          : t(
-              `🏆 Llevas ${n}/${total} trofeos.`,
-              `🏆 You have ${n}/${total} trophies.`
-            )
-      );
+      confetti(45);
+      toast(t("🎉 ¡Todos los trofeos desbloqueados!", "🎉 All trophies unlocked!"));
     });
 
     if (earned) {
@@ -4567,6 +4556,7 @@ function setupFloatingPhysics() {
   };
 
   function confetti(n = 40) {
+    if (!allTrophiesUnlocked()) return;
     const bag = ["⭐", "🎉", "🪙", "✨", "🎈"];
     const reducedMotion = false /* animaciones siempre activas, aunque el sistema pida reducir movimiento */;
     for (let i = 0; i < n; i++) {
@@ -6647,4 +6637,647 @@ function setupFloatingPhysics() {
   const init = () => { applyCopy(); layout(); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
+})();
+
+/* EXPERIENCIA · Overworld con progreso de scroll y sellos "Stage Clear!". */
+(() => {
+  "use strict";
+  const root = document.getElementById("experience-map");
+  if (!root) return;
+
+  /* Los informes recuperan los datos completos del bloque experiences. */
+  const STAGES = [
+    {
+      act: "ACT I",
+      status: "done",
+      experience: experiences[0],
+      role: { es: "Diseño y Desarrollo de Videojuegos y Entornos Virtuales", en: "Game Design and Virtual Environments" },
+      org: "UDIT",
+      dates: "2022 — 2026",
+      points: {
+        es: [
+          "Diseño de mecánicas, sistemas y niveles.",
+          "Prototipos y pruebas de gameplay con Unity y Unreal.",
+          "Proyectos completos en equipos multidisciplinares.",
+        ],
+        en: [
+          "Mechanics, systems and level design.",
+          "Prototypes and gameplay tests with Unity and Unreal.",
+          "Full projects in multidisciplinary teams.",
+        ],
+      },
+      challenge: {
+        es: "Convertir ideas abstractas en prototipos jugables y justificar cada decisión de diseño con pruebas.",
+        en: "Turning abstract ideas into playable prototypes and supporting each design decision with testing.",
+      },
+      result: {
+        es: "Una base sólida para diseñar experiencias jugables y trabajar con perfiles de programación y arte.",
+        en: "A strong foundation for designing playable experiences and working with programming and art profiles.",
+      },
+    },
+    {
+      act: "ACT II",
+      status: "done",
+      experience: experiences[3],
+      role: { es: "Prácticas diseñando Escape Rooms", en: "Escape Room Design Internship" },
+      org: "Icarus Escape",
+      dates: "2024 — 2025",
+      points: {
+        es: [
+          "Diseño de retos, puzles físicos y recorridos.",
+          "Pistas y sistemas de descubrimiento.",
+          "Pruebas con grupos de jugadores reales.",
+        ],
+        en: [
+          "Challenge, physical puzzle and flow design.",
+          "Clues and discovery systems.",
+          "Playtesting with real groups of players.",
+        ],
+      },
+      challenge: {
+        es: "Equilibrar dificultad y ritmo para grupos muy distintos, sin explicar nada a los jugadores.",
+        en: "Balancing difficulty and pacing for very different groups, without explaining anything to players.",
+      },
+      result: {
+        es: "Aprendí a observar cómo interpretan las pistas y a convertir ese feedback en mejoras concretas.",
+        en: "I learned to observe how people read clues and to turn that feedback into concrete improvements.",
+      },
+    },
+    {
+      act: "ACT III",
+      status: "done",
+      experience: experiences[1],
+      role: { es: "Curso básico de IA Aplicada", en: "Basic Applied AI Course" },
+      org: "UDIT",
+      dates: "2024 — 2025",
+      points: {
+        es: [
+          "Fundamentos de IA y Machine Learning.",
+          "Diseño y optimización de prompts.",
+          "Uso responsable y evaluación crítica de resultados.",
+        ],
+        en: [
+          "AI and Machine Learning fundamentals.",
+          "Prompt design and optimisation.",
+          "Responsible use and critical evaluation of results.",
+        ],
+      },
+      challenge: {
+        es: "Entender qué puede y qué no puede hacer cada herramienta antes de integrarla en un proceso creativo.",
+        en: "Understanding what each tool can and cannot do before bringing it into a creative process.",
+      },
+      result: {
+        es: "La IA como herramienta de apoyo que necesita criterio, revisión y una intención clara.",
+        en: "AI as a support tool that needs judgement, review and a clear intention.",
+      },
+    },
+    {
+      act: "ACT IV",
+      status: "done",
+      experience: experiences[2],
+      role: { es: "Curso intermedio de IA Aplicada", en: "Intermediate Applied AI Course" },
+      org: "UDIT",
+      dates: "2025 — 2026",
+      points: {
+        es: [
+          "Flujos de trabajo asistidos por IA.",
+          "Automatización y análisis de datos.",
+          "Detección de errores, sesgos y limitaciones.",
+        ],
+        en: [
+          "AI-assisted workflows.",
+          "Automation and data analysis.",
+          "Spotting errors, bias and limitations.",
+        ],
+      },
+      challenge: {
+        es: "Automatizar y analizar sin perder la intención humana ni el control de las decisiones del proyecto.",
+        en: "Automating and analysing without losing human intent or control over project decisions.",
+      },
+      result: {
+        es: "Combinar automatización y análisis validando siempre los resultados antes de incorporarlos.",
+        en: "Combining automation and analysis while always validating results before using them.",
+      },
+    },
+  ];
+
+  const TX = {
+    es: { clear: "STAGE CLEAR!", open: "Ver informe de etapa", close: "Ocultar informe",
+          challenge: "Reto principal", result: "Resultado / aprendizaje", goal: "Meta",
+          description: "Descripción", areas: "Principales áreas trabajadas", learned: "Lo que aprendí",
+          imageMissing: "Imagen no disponible",
+          goalHint: "Recorre todas las etapas para activar la moneda", goalDone: "Nivel completado",
+          coin: "Recoger la moneda de meta", label: "Mapa de experiencia" },
+    en: { clear: "STAGE CLEAR!", open: "View stage report", close: "Hide report",
+          challenge: "Main challenge", result: "Result / learning", goal: "Finish line",
+          description: "Description", areas: "Main areas covered", learned: "What I learned",
+          imageMissing: "Image unavailable",
+          goalHint: "Explore every stage to activate the coin", goalDone: "Level complete",
+          coin: "Collect the finish coin", label: "Experience map" },
+  };
+
+  const lang = () => (document.documentElement.lang === "en" ? "en" : "es");
+  const pick = (v) => (v && typeof v === "object" ? (v[lang()] ?? v.es) : v);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+  const mascotSrc = (moving = false) => {
+    const mascot = window.pmmMascot?.();
+    if (!mascot) return "";
+    if (reducedMotion?.matches) return mascot.still;
+    return moving ? mascot.pawnRun : mascot.pawnIdle;
+  };
+
+  const reached = new Set();
+  const opened = new Set();
+  let ov, fill, line, pawn, pawnImg, goalEl, goalCoin, nodes = [], stageEls = [], ys = [], ro = null;
+  let lastPawnY = null, moving = false, stopTimer = 0;
+
+  function syncMascot() {
+    if (!pawnImg) return;
+    const src = mascotSrc(moving);
+    if (src && pawnImg.getAttribute("src") !== src) pawnImg.src = src;
+    pawn.dataset.motion = moving ? "running" : "idle";
+  }
+
+  function setMoving(value) {
+    moving = value;
+    syncMascot();
+  }
+
+  function render() {
+    const t = TX[lang()];
+    const G = window.pmmGame;
+    const goalDone = !!(G && G.has("goal"));
+
+    const stages = STAGES.map((s, i) => {
+      const experience = s.experience;
+      const isOpen = opened.has(i);
+      const cls = ["ov-stage", reached.has(i) ? "is-cleared is-instant" : "", isOpen ? "is-open" : ""].join(" ").trim();
+      const points = (pick(s.points) || []).map((p) => `<li>${esc(p)}</li>`).join("");
+      const areas = (pick(experience.areas) || []).map((p) => `<li>${esc(p)}</li>`).join("");
+      const learnedPoints = (pick(experience.learnedPoints) || []).map((p) => `<li>${esc(p)}</li>`).join("");
+      return `
+        <li class="${cls}" data-stage="${i}">
+          <span class="ov-node" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
+          <article class="ov-card">
+            <header class="ov-card-head">
+              <span class="ov-act">${esc(s.act)}</span>
+              <span class="ov-stamp">${t.clear}</span>
+            </header>
+            <div class="ov-cover">
+              <img src="${esc(experience.image)}" alt="" loading="lazy">
+              <span class="ov-cover-fallback" hidden>${t.imageMissing}</span>
+            </div>
+            <h3 class="ov-role">${esc(pick(experience.title))}</h3>
+            <p class="ov-meta"><span class="ov-org">${esc(experience.organization)}</span><time>${esc(experience.date)}</time></p>
+            <ul class="ov-points">${points}</ul>
+            <button type="button" class="ov-report-btn" aria-expanded="${isOpen}" aria-controls="ov-report-${i}">
+              <span class="ov-report-label">${isOpen ? t.close : t.open}</span><i aria-hidden="true"></i>
+            </button>
+            <div class="ov-report" id="ov-report-${i}">
+              <div class="ov-report-clip">
+                <div class="ov-report-body">
+                  <section><h4>${t.challenge}</h4><p>${esc(pick(s.challenge))}</p></section>
+                  <section><h4>${t.result}</h4><p>${esc(pick(s.result))}</p></section>
+                  <section class="ov-report-full"><h4>${t.description}</h4><p>${esc(pick(experience.description))}</p></section>
+                  <section class="ov-report-full"><h4>${t.areas}</h4><ul class="ov-report-list">${areas}</ul></section>
+                  <section class="ov-report-full"><h4>${t.learned}</h4><p>${esc(pick(experience.learned))}</p><ul class="ov-report-list">${learnedPoints}</ul></section>
+                </div>
+              </div>
+            </div>
+          </article>
+        </li>`;
+    }).join("");
+
+    root.innerHTML = `
+      <div class="ov" role="group" aria-label="${esc(t.label)}">
+        <div class="ov-track" aria-hidden="true">
+          <span class="ov-line"></span><span class="ov-fill"></span>
+          <span class="ov-pawn"><img alt="" src="${esc(mascotSrc())}"></span>
+        </div>
+        <ol class="ov-list">
+          ${stages}
+          <li class="ov-goal">
+            <span class="ov-node" aria-hidden="true">🏁</span>
+            <div class="ov-goal-box">
+              <div><b>${t.goal}</b><small>${goalDone ? t.goalDone : t.goalHint}</small></div>
+              <button type="button" class="ov-goal-coin" disabled aria-label="${esc(t.coin)}">🪙</button>
+            </div>
+          </li>
+        </ol>
+      </div>`;
+
+    ov = root.querySelector(".ov");
+    line = ov.querySelector(".ov-line");
+    fill = ov.querySelector(".ov-fill");
+    pawn = ov.querySelector(".ov-pawn");
+    pawnImg = pawn.querySelector("img");
+    goalEl = ov.querySelector(".ov-goal");
+    goalCoin = ov.querySelector(".ov-goal-coin");
+    nodes = [...ov.querySelectorAll(".ov-node")];
+    stageEls = [...ov.querySelectorAll(".ov-stage")];
+    clearTimeout(stopTimer);
+    lastPawnY = null;
+    const currentPawn = pawn;
+    const currentPawnImg = pawnImg;
+    currentPawnImg.addEventListener("error", () => {
+      currentPawnImg.hidden = true;
+      currentPawn.classList.add("is-missing");
+    });
+    currentPawnImg.addEventListener("load", () => {
+      currentPawnImg.hidden = false;
+      currentPawn.classList.remove("is-missing");
+    });
+    setMoving(false);
+    ov.querySelectorAll(".ov-cover img").forEach((img) => {
+      img.addEventListener("error", () => {
+        img.hidden = true;
+        img.nextElementSibling.hidden = false;
+      }, { once: true });
+    });
+
+    ro?.disconnect();
+    if ("ResizeObserver" in window) {
+      ro = new ResizeObserver(() => { measure(); schedule(); });
+      ro.observe(ov);
+    }
+    measure();
+    update(true);
+  }
+
+  /* Posición vertical de cada nodo (centro) respecto al contenedor */
+  function measure() {
+    if (!ov) return;
+    const r = ov.getBoundingClientRect();
+    ys = nodes.map((n) => {
+      const b = n.getBoundingClientRect();
+      return b.top - r.top + b.height / 2;
+    });
+    const y0 = ys[0], yN = ys[ys.length - 1];
+    line.style.top = y0 + "px";
+    line.style.height = yN - y0 + "px";
+    fill.style.top = y0 + "px";
+  }
+
+  /* El relleno y el peón siguen el scroll; nodos y sellos se "ganan" una vez */
+  function update(instant = false) {
+    if (!ov || !ys.length) return;
+    const r = ov.getBoundingClientRect();
+    const lineY = window.innerHeight * 0.62 - r.top;
+    const y0 = ys[0], yN = ys[ys.length - 1];
+    const f = clamp(lineY - y0, 0, yN - y0);
+
+    fill.style.height = f + "px";
+    const nextPawnY = y0 + f;
+    pawn.style.top = nextPawnY + "px";
+    if (!instant && lastPawnY !== null && Math.abs(nextPawnY - lastPawnY) > 0.5) {
+      setMoving(true);
+      clearTimeout(stopTimer);
+      stopTimer = setTimeout(() => setMoving(false), reducedMotion?.matches ? 0 : 280);
+    }
+    lastPawnY = nextPawnY;
+
+    stageEls.forEach((li, i) => {
+      if (reached.has(i) || lineY < ys[i]) return;
+      reached.add(i);
+      if (instant) li.classList.add("is-instant");
+      li.classList.add("is-cleared");
+      window.pmmGame?.claim("flag:" + i, 2);
+    });
+
+    const ready = lineY >= yN && reached.size === STAGES.length;
+    goalEl.classList.toggle("is-ready", ready);
+    goalCoin.disabled = !ready || !!window.pmmGame?.has("goal");
+
+    syncMascot();
+  }
+
+  let frame = 0;
+  function schedule() {
+    if (frame) return;
+    frame = requestAnimationFrame(() => { frame = 0; update(); });
+  }
+
+  /* Informe de etapa + moneda de meta (delegación: sobrevive a los re-render) */
+  root.addEventListener("click", (e) => {
+    const btn = e.target.closest(".ov-report-btn");
+    if (btn) {
+      const li = btn.closest(".ov-stage");
+      const i = Number(li.dataset.stage);
+      const isOpen = li.classList.toggle("is-open");
+      if (isOpen) opened.add(i); else opened.delete(i);
+      btn.setAttribute("aria-expanded", String(isOpen));
+      btn.querySelector(".ov-report-label").textContent = TX[lang()][isOpen ? "close" : "open"];
+      return;
+    }
+    if (e.target.closest(".ov-goal-coin")) {
+      const G = window.pmmGame;
+      if (!G || G.has("goal") || !goalEl.classList.contains("is-ready")) return;
+      G.claim("goal", 10);
+      G.unlock("goal");
+      G.confetti(40);
+      render();
+    }
+  });
+
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", () => { measure(); schedule(); });
+  window.addEventListener("load", () => { measure(); update(); });
+  window.addEventListener("pmm:mascot-changed", syncMascot);
+  reducedMotion?.addEventListener?.("change", syncMascot);
+  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+
+  render();
+})();
+
+
+/* CONTACTO · HOGUERA (formulario seguro, sin almacenar datos personales) */
+(() => {
+  'use strict';
+  const section = document.getElementById('contact');
+  if (!section || !section.classList.contains('savepoint')) return;
+
+  /* ===== CONFIGURACIÓN ===== */
+  // El correo se monta en JS para que los scrapers simples no lo lean del HTML.
+  const EMAIL = ['p.menendezmoran', 'gmail.com'].join('@');
+  // FormSubmit: tras la activación, sustituye EMAIL por el alias aleatorio que te den.
+  const ENDPOINT = 'https://formsubmit.co/ajax/' + EMAIL;
+  const LIMITS = {
+    cooldownMs: 10 * 60 * 1000,   // mínimo entre dos envíos
+    maxPerDay: 3,                 // máximo en 24 h
+    windowMs: 24 * 60 * 60 * 1000,
+    minFillMs: 3000,              // tiempo mínimo desde que se toca el formulario
+    timeoutMs: 12000,
+    maxLinks: 2,
+  };
+  const STORE_KEY = 'pmm:sp-sends'; // solo marcas de tiempo, nunca nombre, correo ni mensaje
+
+  const COPY = {
+    es: {
+      tag: 'HOGUERA', bannerWide: 'Hoguera encendida',
+      lead: 'Has llegado a la última hoguera del recorrido. Si tienes una idea, un prototipo a medias o un problema de diseño, acércate al fuego y empecemos una nueva misión en cooperativo.',
+      mailLabel: 'Correo directo', copied: '✓ ¡Correo copiado!',
+      linksLabel: 'Otros caminos', pending: 'pendiente',
+      formTitle: 'Deja tu mensaje junto al fuego', fName: 'Nombre', fEmail: 'Correo', fMessage: 'Mensaje',
+      submit: 'Descansar en la hoguera', sending: 'Guardando partida…',
+      sIdle: 'Las brasas aguardan', sActive: 'Preparando conexión...',
+      sSending: 'Guardando partida...', sSaved: 'Hoguera encendida', sError: 'Señal perdida. Inténtalo de nuevo.',
+      privacy: 'Esta web no guarda tu mensaje: viaja por HTTPS directo a mi correo y el formulario se vacía al terminar.',
+      errName: 'Escribe tu nombre (mínimo 2 caracteres).',
+      errEmail: 'Revisa el correo: no parece válido.',
+      errMsg: 'El mensaje es demasiado corto (mínimo 10 caracteres).',
+      errLinks: 'Demasiados enlaces en el mensaje. Deja como máximo 2.',
+      errWait: 'Espera unos segundos y vuelve a pulsar.',
+      rateWait: (m) => `Ya enviaste un mensaje hace poco. Podrás enviar otro en ${m} min.`,
+      rateDay: 'Has alcanzado el límite de mensajes de hoy. Inténtalo mañana o escribe directamente al correo.',
+      errNetwork: (e) => `No se pudo enviar. Prueba de nuevo o escríbeme a ${e}.`,
+      doneTitle: 'Partida guardada', doneSub: 'Hoguera encendida',
+      doneText: 'Mensaje enviado. Te responderé lo antes posible.',
+      doneAgain: 'Escribir otro mensaje',
+    },
+    en: {
+      tag: 'BONFIRE', bannerWide: 'Bonfire lit',
+      lead: 'You have reached the last bonfire of the route. If you have an idea, a half-finished prototype or a design problem, come closer to the fire and let us start a new co-op quest.',
+      mailLabel: 'Direct email', copied: '✓ Email copied!',
+      linksLabel: 'Other paths', pending: 'pending',
+      formTitle: 'Leave your message by the fire', fName: 'Name', fEmail: 'Email', fMessage: 'Message',
+      submit: 'Rest at the bonfire', sending: 'Saving game…',
+      sIdle: 'The embers wait', sActive: 'Preparing connection...',
+      sSending: 'Saving game...', sSaved: 'Bonfire lit', sError: 'Signal lost. Please try again.',
+      privacy: 'This site does not store your message: it travels over HTTPS straight to my inbox and the form is cleared afterwards.',
+      errName: 'Enter your name (at least 2 characters).',
+      errEmail: 'Check the email: it does not look valid.',
+      errMsg: 'The message is too short (at least 10 characters).',
+      errLinks: 'Too many links in the message. Keep it to 2 at most.',
+      errWait: 'Wait a few seconds and press again.',
+      rateWait: (m) => `You sent a message recently. You can send another in ${m} min.`,
+      rateDay: 'You have reached the daily message limit. Try again tomorrow or write to the email directly.',
+      errNetwork: (e) => `Could not send. Try again or write to me at ${e}.`,
+      doneTitle: 'Game saved', doneSub: 'Bonfire lit',
+      doneText: 'Message sent. I will get back to you as soon as I can.',
+      doneAgain: 'Write another message',
+    },
+  };
+
+  const q = (s) => section.querySelector(s);
+  const form = q('#sp-form'), done = q('#sp-done'), errorBox = q('#sp-error');
+  const submitBtn = q('#sp-submit'), statusText = q('#sp-status-text');
+  const copyFeedback = q('#sp-copy-feedback');
+  const mailLink = q('#sp-mail-addr'), wideBanner = q('#sp-banner-wide');
+  const fName = q('#sp-name'), fEmail = q('#sp-email'), fMsg = q('#sp-message'), fHoney = q('.sp-hp');
+
+  const STATE_KEY = { idle: 'sIdle', active: 'sActive', sending: 'sSending', saved: 'sSaved', error: 'sError' };
+  let state = 'idle', copied = false, sending = false, copyTimer = 0, bannerTimer = 0, startedAt = 0;
+  let err = null; // { key, arg }
+  const memorySends = [];
+
+  const lang = () => (document.documentElement.lang === 'en' ? 'en' : 'es');
+  const t = () => COPY[lang()];
+  const pickText = (v, arg) => (typeof v === 'function' ? v(arg) : v);
+
+  /* ===== Textos (siempre con textContent: nada del usuario entra como HTML) ===== */
+  function render() {
+    const c = t();
+    section.querySelectorAll('[data-i18n]').forEach((n) => { if (c[n.dataset.i18n] != null) n.textContent = c[n.dataset.i18n]; });
+    statusText.textContent = c[STATE_KEY[state]];
+    copyFeedback.textContent = copied ? c.copied : '';
+    submitBtn.textContent = sending ? c.sending : c.submit;
+    if (err) errorBox.textContent = pickText(c[err.key], err.arg);
+  }
+  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+
+  function setState(next) {
+    state = next;
+    section.dataset.state = next;
+    statusText.textContent = t()[STATE_KEY[next]];
+  }
+  function showError(key, arg, field) {
+    err = { key, arg };
+    errorBox.hidden = false;
+    errorBox.textContent = pickText(t()[key], arg);
+    [fName, fEmail, fMsg].forEach((f) => f.removeAttribute('aria-invalid'));
+    if (field) { field.setAttribute('aria-invalid', 'true'); field.focus(); }
+  }
+  function clearError() {
+    err = null;
+    errorBox.hidden = true;
+    [fName, fEmail, fMsg].forEach((f) => f.removeAttribute('aria-invalid'));
+  }
+
+  /* ===== Correo visible y copiar ===== */
+  mailLink.href = 'mailto:' + EMAIL;
+  mailLink.textContent = EMAIL;
+
+  async function copyEmail() {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = EMAIL;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch { /* sin portapapeles */ }
+      ta.remove();
+    }
+    copied = true;
+    copyFeedback.classList.add('is-visible');
+    render();
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => { copied = false; copyFeedback.classList.remove('is-visible'); render(); }, 2000);
+  }
+  mailLink.addEventListener('click', (event) => {
+    event.preventDefault();
+    copyEmail();
+  });
+
+  section.querySelectorAll('.sp-links a[aria-disabled="true"]').forEach((a) =>
+    a.addEventListener('click', (e) => e.preventDefault())
+  );
+
+  /* ===== Límite de envíos (solo marcas de tiempo, sin datos personales) ===== */
+  function readSends() {
+    const now = Date.now();
+    let stored = [];
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+      if (Array.isArray(raw)) stored = raw;
+    } catch { /* almacenamiento bloqueado o corrupto */ }
+    return [...stored, ...memorySends]
+      .filter((n) => Number.isFinite(n) && n > now - LIMITS.windowMs && n <= now + 60000)
+      .slice(-20);
+  }
+  function recordSend() {
+    const now = Date.now();
+    memorySends.push(now);
+    try { localStorage.setItem(STORE_KEY, JSON.stringify([...readSends(), now].slice(-20))); } catch { /* ok */ }
+  }
+  function checkRate() {
+    const sends = readSends();
+    if (!sends.length) return null;
+    const wait = Math.max(...sends) + LIMITS.cooldownMs - Date.now();
+    if (wait > 0) return { key: 'rateWait', arg: Math.ceil(wait / 60000) };
+    if (sends.length >= LIMITS.maxPerDay) return { key: 'rateDay' };
+    return null;
+  }
+
+  /* ===== La hoguera reacciona al escribir ===== */
+  form.addEventListener('focusin', () => {
+    if (!startedAt) startedAt = Date.now();
+    if (state === 'idle' || state === 'error') setState('active');
+  });
+  form.addEventListener('focusout', (e) => {
+    if (form.contains(e.relatedTarget)) return;
+    if (state === 'active') setState('idle');
+  });
+
+  /* ===== Saneado y validación ===== */
+  const clean = (s) => String(s)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g, '')
+    .trim();
+  const EMAIL_RE = /^[^\s@<>()[\]\\,;:]{1,64}@[^\s@<>()[\]\\,;:]{1,190}\.[^\s@<>()[\]\\,;:]{2,}$/;
+
+  function validate() {
+    const name = clean(fName.value).replace(/[\r\n]+/g, ' ').slice(0, 80);
+    const email = clean(fEmail.value).slice(0, 120);
+    const message = clean(fMsg.value).slice(0, 2000);
+    if (name.length < 2) return { error: ['errName', null, fName] };
+    if (!EMAIL_RE.test(email)) return { error: ['errEmail', null, fEmail] };
+    if (message.length < 10) return { error: ['errMsg', null, fMsg] };
+    if ((message.match(/https?:\/\/|www\./gi) || []).length > LIMITS.maxLinks) return { error: ['errLinks', null, fMsg] };
+    return { name, email, message };
+  }
+
+  /* ===== Envío ===== */
+  function showDone() {
+    form.hidden = true;
+    done.hidden = false;
+    setState('saved');
+    render();
+    // Banner grande sobre la sección
+    wideBanner.classList.remove('is-on');
+    void wideBanner.offsetWidth;
+    wideBanner.classList.add('is-on');
+    clearTimeout(bannerTimer);
+    bannerTimer = setTimeout(() => wideBanner.classList.remove('is-on'), 4400);
+    q('#sp-done-title').focus({ preventScroll: true });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (sending) return;
+
+    // Trampa anti-bots: aparenta éxito pero no envía nada.
+    if (fHoney.value) { form.reset(); showDone(); return; }
+
+    // Un humano tarda más de unos segundos en rellenar el formulario.
+    if (!startedAt || Date.now() - startedAt < LIMITS.minFillMs) { showError('errWait'); return; }
+
+    const rate = checkRate();
+    if (rate) { showError(rate.key, rate.arg); return; }
+
+    const v = validate();
+    if (v.error) { showError(...v.error); return; }
+
+    clearError();
+    sending = true;
+    submitBtn.disabled = true;
+    submitBtn.setAttribute('aria-busy', 'true');
+    setState('sending');
+    render();
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), LIMITS.timeoutMs);
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: v.name,
+          email: v.email,
+          message: v.message,
+          _subject: 'Portfolio · ' + v.name.slice(0, 40),
+          _template: 'box',
+          _captcha: 'false',
+          _honey: '',
+        }),
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer',
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || String(data.success) !== 'true') throw new Error('send-failed');
+
+      recordSend();
+      form.reset();          // el formulario se vacía: no queda nada en pantalla
+      startedAt = 0;
+      showDone();
+    } catch {
+      showError('errNetwork', EMAIL);
+      setState('error');
+    } finally {
+      clearTimeout(timer);
+      sending = false;
+      submitBtn.disabled = false;
+      submitBtn.removeAttribute('aria-busy');
+      render();
+    }
+  });
+
+  /* ===== Escribir otro mensaje ===== */
+  q('#sp-again').addEventListener('click', () => {
+    form.reset();
+    clearError();
+    startedAt = 0;
+    done.hidden = true;
+    form.hidden = false;
+    setState('idle');
+    fName.focus();
+  });
+
+  render();
 })();

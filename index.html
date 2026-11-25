@@ -12,7 +12,7 @@
     <title>Pablo · Game Design / Dev</title>
 
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="styles.css?v=63" />
+    <link rel="stylesheet" href="styles.css?v=70" />
     <noscript>
       <style>
         .cs-reveal {
@@ -459,7 +459,7 @@
           </div>
         </section>
 
-        <!-- EXPERIENCIA: recorrido cronológico renderizado por JavaScript. -->
+        <!-- EXPERIENCIA: mapa tipo Overworld renderizado por JavaScript. -->
         <section class="section experience-section" id="experience">
           <div class="section-heading">
             <div>
@@ -472,34 +472,114 @@
             </p>
           </div>
 
-          <div class="experience-list" id="experience-list"></div>
+          <div class="ov-wrap" id="experience-map"></div>
         </section>
+        <!-- CONTACTO · HOGUERA (estilo Souls) -->
+<section class='savepoint' id='contact' aria-labelledby='sp-title' data-state='idle'>
+  <pre class='sp-ascii-backdrop' aria-hidden='true'>
+       _||_                 _||_                    _||_
+      |    |      ___      |    |       ___        |    |
+   ___| [] |_____/   \_____| [] |______/   \________| [] |___
+  /___|    |___/  _   \___|    |___/  _   \____/___|    |__\
+     |____|     | | | |   |____|    | | | |       |____|
+   ..  ||        |_|_|      ||    .. |_|_|   ..     ||   ..
+  /\\  ||   /\\  /   \  /\\ ||   /\\ /   \ /\\    ||  /\\
+ /  \\_||__/  \\/_____\\/  \\||__/  \\_____/  \\___||_/  \\
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     ^  ^       ^^^       ^  ^^^       ^       ^^^      ^
+    /|\ /|\    /| |\     /|\ /|\     /|\     /| |\    /|\</pre>
+	  <!-- Banner que cruza la sección al enviar -->
+  <div class='sp-banner-wide' id='sp-banner-wide' aria-hidden='true'><span data-i18n='bannerWide'></span></div>
 
-        <!-- CONTACTO: correo y enlaces profesionales. -->
-        <section class="contact-section" id="contact">
-          <div class="contact-inner">
-            <p class="eyebrow">Contacto</p>
-            <h2>¿Hablamos de<br /><em>un juego?</em></h2>
-            <p>
-              Si tienes una idea, un prototipo a medias o un problema de diseño
-              que quieras mirar desde otro ángulo, escríbeme. Me gusta hablar de
-              juegos antes de que estén resueltos.
-            </p>
-            <a
-              class="button button-dark"
-              href="mailto:contacto@pablomenendezmoran.com"
-              >Escribir un mensaje →</a
-            >
-            <div class="contact-links">
-              <a href="mailto:contacto@pablomenendezmoran.com">✉ Email</a
-              ><span class="contact-pending"
-                >GitHub <small>pendiente</small></span
-              ><span class="contact-pending">CV <small>pendiente</small></span>
-            </div>
-          </div>
-        </section>
-      </main>
+  <div class='sp-shell'>
 
+    <!-- Columna izquierda: texto, correo y enlaces -->
+    <div class='sp-info'>
+      <p class='eyebrow'>Contacto</p>
+      <h2 id='sp-title'>¿Hablamos de<br /><em>un juego?</em></h2>
+      <div class='sp-rule' aria-hidden='true'><i></i></div>
+      <div class='sp-lead' data-i18n='lead'></div>
+
+      <div class='sp-mail'>
+        <span class='sp-label' data-i18n='mailLabel'></span>
+        <div class='sp-mail-row'>
+          <a class='sp-mail-addr' id='sp-mail-addr' href='#' aria-describedby='sp-copy-feedback'></a>
+          <span class='sp-copy-feedback' id='sp-copy-feedback' role='status' aria-live='polite'></span>
+        </div>
+      </div>
+
+      <div class='sp-links-wrap'>
+        <span class='sp-label' data-i18n='linksLabel'></span>
+        <ul class='sp-links'>
+          <!-- Cuando tengas la URL: cambia href y quita aria-disabled -->
+          <li><a href='https://bloodmoons-studios.itch.io' target='_blank' rel='noopener noreferrer'><span>Itch.io</span><span class='sp-tag'>↗</span></a></li>
+          <li><a href='#' aria-disabled='true'><span>LinkedIn</span><span class='sp-tag' data-i18n='pending'></span></a></li>
+          <li><a href='#' aria-disabled='true'><span>GitHub</span><span class='sp-tag' data-i18n='pending'></span></a></li>
+          <li><a href='#' aria-disabled='true'><span>CV</span><span class='sp-tag' data-i18n='pending'></span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Columna central: hoguera animada y espada clavada -->
+    <div class='sp-fire-col'>
+      <div class='sp-fire-scene' aria-hidden='true'>
+        <div class='sp-sword'>
+          <span class='sp-sword-hilt'></span>
+          <span class='sp-sword-guard'></span>
+          <span class='sp-sword-blade'></span>
+        </div>
+        <div class='sp-fire-glow'></div>
+        <div class='sp-flames sp-flames-back'><i></i><i></i><i></i></div>
+        <div class='sp-flames sp-flames-front'><i></i><i></i><i></i></div>
+        <div class='sp-logs'><i></i><i></i></div>
+        <div class='sp-embers'><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class='sp-status' role='status' aria-live='polite'>
+        <span class='sp-status-tag' data-i18n='tag'></span>
+        <span class='sp-status-text' id='sp-status-text'></span>
+      </div>
+    </div>
+
+    <!-- Columna derecha: formulario -->
+    <div class='sp-card'>
+      <form class='sp-form' id='sp-form' novalidate>
+        <h3 class='sp-form-title' data-i18n='formTitle'></h3>
+        <div class='sp-rule' aria-hidden='true'><i></i></div>
+
+        <div class='sp-field'>
+          <label for='sp-name' data-i18n='fName'></label>
+          <input id='sp-name' name='name' type='text' autocomplete='name' required minlength='2' maxlength='80' />
+        </div>
+        <div class='sp-field'>
+          <label for='sp-email' data-i18n='fEmail'></label>
+          <input id='sp-email' name='email' type='email' autocomplete='email' required maxlength='120' />
+        </div>
+        <div class='sp-field'>
+          <label for='sp-message' data-i18n='fMessage'></label>
+          <textarea id='sp-message' name='message' rows='5' required minlength='10' maxlength='2000'></textarea>
+        </div>
+
+        <!-- Trampa anti-bots: los humanos no lo ven -->
+        <input class='sp-hp' type='text' name='website' tabindex='-1' autocomplete='off' aria-hidden='true' />
+
+        <button type='submit' class='sp-btn sp-btn--primary' id='sp-submit'></button>
+        <div class='sp-error' id='sp-error' role='alert' hidden></div>
+        <div class='sp-note' data-i18n='privacy'></div>
+      </form>
+
+      <div class='sp-done' id='sp-done' hidden>
+        <div class='sp-banner'>
+          <h3 class='sp-done-title' id='sp-done-title' tabindex='-1' data-i18n='doneTitle'></h3>
+          <span class='sp-banner-sub' data-i18n='doneSub'></span>
+        </div>
+        <div class='sp-done-text' data-i18n='doneText'></div>
+        <button type='button' class='sp-btn sp-btn--ghost' id='sp-again' data-i18n='doneAgain'></button>
+      </div>
+    </div>
+
+  </div>
+</section>
+        
       <!-- PIE DE PÁGINA: créditos y retorno al inicio. -->
       <footer class="footer">
         <span>© 2026 Pablo Menéndez-Morán</span
@@ -530,6 +610,6 @@
     </div>
 
       <!-- Comportamiento común: renderizado, idioma y controles. -->
-    <script src="script.js?v=56"></script>
+    <script src="script.js?v=58"></script>
   </body>
 </html>
